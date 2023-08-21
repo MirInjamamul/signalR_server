@@ -26,7 +26,7 @@ app.UseCors(cp => cp
     .SetIsOriginAllowed(origin => true)
     .AllowCredentials());
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
