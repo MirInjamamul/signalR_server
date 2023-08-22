@@ -21,5 +21,10 @@ namespace chat_server.Hubs
         {
             Clients.All.SendAsync("ReceiveMessage", message);
         }
+
+        public string GetConnectionId()
+        {
+            return Context.ConnectionId;
+        }
     }
 }
