@@ -22,6 +22,12 @@ namespace chat_server.Hubs
             Clients.All.SendAsync("ReceiveMessage", message);
         }
 
+        // Send to one - one mesage
+        public async Task LiveInviteToUser(String connectionId, LiveMatch liveMatchInvitation)
+        {
+            await Clients.Client(connectionId).SendAsync("ReceiveLiveInvitation", liveMatchInvitation.Message);
+        }
+
         public string GetConnectionId()
         {
             return Context.ConnectionId;
