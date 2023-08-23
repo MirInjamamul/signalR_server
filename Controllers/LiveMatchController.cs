@@ -21,11 +21,7 @@ namespace chat_server.Controllers
         [Route("PushInvitation")]
         public IActionResult PushInvitation(String connectioId, LiveMatch invitation)
         {
-            LiveMatch liveMatchInvitation = new LiveMatch();
-            liveMatchInvitation.Id = invitation.Id;
-            liveMatchInvitation.Message = invitation.Message;
-
-            _hubContext.Clients.Client(connectioId).SendAsync("ReceiveLiveInvitation", liveMatchInvitation.Message);
+            _hubContext.Clients.Client(connectioId).SendAsync("ReceiveLiveInvitation", invitation);
 
             return Ok("Done");
         }
