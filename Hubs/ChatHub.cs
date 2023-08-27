@@ -28,6 +28,13 @@ namespace chat_server.Hubs
             await Clients.Client(connectionId).SendAsync("ReceiveLiveInvitation", liveMatchInvitation);
         }
 
+
+        public void LiveMessageToUser(String connectionId, String message)
+        {
+            Clients.Client(connectionId).SendAsync("ReceiveLiveMessage", message);
+        }
+
+
         public string GetConnectionId()
         {
             return Context.ConnectionId;
