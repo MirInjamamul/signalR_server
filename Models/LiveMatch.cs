@@ -5,7 +5,7 @@
         public string SenderId { get; set; }
         public string Name { get; set; }
         public string Photo { get; set; }
-        public int RoomId { get; set; }
+        public string RoomId { get; set; }
         public string Message { get; set; }
     }
 }
