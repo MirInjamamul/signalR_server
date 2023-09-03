@@ -5,11 +5,50 @@ namespace chat_server.Hubs
 {
     public class ChatHub : Hub
     {
+
+        private readonly PresenceTracker _presenceTracker;
+
+        public ChatHub(PresenceTracker presenceTracker)
+        {
+            _presenceTracker = presenceTracker;
+        }
+
         public override async Task OnConnectedAsync()
         {
-            await Clients.All.SendAsync("UserConnected", Context.ConnectionId);
+            var user = Context.User.Identity.Name ?? Context.ConnectionId;
+            var result =  await _presenceTracker.ConnectionOpened(user);
+
+            if (result.UserJoined)
+            {
+                // Send Notice to Caller Only
+                await Clients.Caller.SendAsync("signalRConnected", "Connected to server");
+
+                // Send Notice to everyone
+                await Clients.All.SendAsync("UserConnected", Context.ConnectionId);
+
+                // Broadcase online users to everyone
+                var currentUsers = await _presenceTracker.GetOnlineUsers();
+                await Clients.All.SendAsync("onlineUsers", currentUsers);
+            }
 
             await base.OnConnectedAsync();
+        }
+
+        public override async Task OnDisconnectedAsync(Exception exception)
+        {
+            var user = Context.User.Identity.Name ?? Context.ConnectionId;
+            var result = await _presenceTracker.ConnectionClosed(user);
+
+            if (result.UserLeft)
+            {
+                await Clients.All.SendAsync("UserDisconnected", "User Disconnected");
+            }
+
+            // Broadcast online users to All
+            var currentUsers = await _presenceTracker.GetOnlineUsers();
+            await Clients.All.SendAsync("onlineUsers", currentUsers);
+
+            await base.OnDisconnectedAsync(exception);
         }
 
         public void BroadcastUser(User user)
