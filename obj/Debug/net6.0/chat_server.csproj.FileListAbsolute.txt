@@ -49,3 +49,16 @@ D:\WorkSpacify_Production\signalR_server\obj\Debug\net6.0\refint\chat_server.dll
 D:\WorkSpacify_Production\signalR_server\obj\Debug\net6.0\chat_server.pdb
 D:\WorkSpacify_Production\signalR_server\obj\Debug\net6.0\chat_server.genruntimeconfig.cache
 D:\WorkSpacify_Production\signalR_server\obj\Debug\net6.0\ref\chat_server.dll
+D:\WorkSpacify_Production\signalR_server\bin\Debug\net6.0\AWSSDK.Core.dll
+D:\WorkSpacify_Production\signalR_server\bin\Debug\net6.0\AWSSDK.SecurityToken.dll
+D:\WorkSpacify_Production\signalR_server\bin\Debug\net6.0\DnsClient.dll
+D:\WorkSpacify_Production\signalR_server\bin\Debug\net6.0\MongoDB.Bson.dll
+D:\WorkSpacify_Production\signalR_server\bin\Debug\net6.0\MongoDB.Driver.dll
+D:\WorkSpacify_Production\signalR_server\bin\Debug\net6.0\MongoDB.Driver.Core.dll
+D:\WorkSpacify_Production\signalR_server\bin\Debug\net6.0\MongoDB.Libmongocrypt.dll
+D:\WorkSpacify_Production\signalR_server\bin\Debug\net6.0\SharpCompress.dll
+D:\WorkSpacify_Production\signalR_server\bin\Debug\net6.0\Snappier.dll
+D:\WorkSpacify_Production\signalR_server\bin\Debug\net6.0\ZstdSharp.dll
+D:\WorkSpacify_Production\signalR_server\bin\Debug\net6.0\runtimes\linux\native\libmongocrypt.so
+D:\WorkSpacify_Production\signalR_server\bin\Debug\net6.0\runtimes\osx\native\libmongocrypt.dylib
+D:\WorkSpacify_Production\signalR_server\bin\Debug\net6.0\runtimes\win\native\mongocrypt.dll

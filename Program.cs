@@ -1,8 +1,22 @@
 using chat_server.Hubs;
+using chat_server.Models;
+using chat_server.Services;
+using Microsoft.Extensions.Options;
+using MongoDB.Driver;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+builder.Services.Configure<RosterStoreDatabaseSettings>(builder.Configuration.GetSection(nameof(RosterStoreDatabaseSettings)));
+
+builder.Services.AddSingleton<IRosterStoreDatabaseSettings>(sp => 
+    sp.GetRequiredService<IOptions<RosterStoreDatabaseSettings>>().Value);
+
+builder.Services.AddSingleton<IMongoClient>(s => 
+    new MongoClient(builder.Configuration.GetValue<string>("RosterStoreDatabaseSettings:ConnectionString")));
+
+builder.Services.AddScoped<IRosterService, RosterService>();
 
 builder.Services.AddCors();
 

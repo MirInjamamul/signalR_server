@@ -51,6 +51,31 @@ namespace chat_server.Hubs
             await base.OnDisconnectedAsync(exception);
         }
 
+        public async Task Join(string username, string connecitonId)
+        {
+
+            var nickName = username;
+
+            var nickAvailable = await _presenceTracker.NickNameAvailable(nickName);
+            if (!nickAvailable) 
+            {
+                nickName = $"{username}_{Guid.NewGuid().ToString("N").Substring(0, 6)}";
+            }
+
+            await _presenceTracker.ConnectionClosed(connecitonId);
+
+            var result = await _presenceTracker.ConnectionOpened(nickName);
+
+            if(result.UserJoined)
+            {
+                await Clients.All.SendAsync("UserConnected", nickName);
+            }
+
+            var currentUsers = await _presenceTracker.GetOnlineUsers();
+            await Clients.All.SendAsync("onlineUsers", currentUsers);
+
+        }
+
         public void BroadcastUser(User user)
         {
             Clients.All.SendAsync("ReceiveUser", user);
