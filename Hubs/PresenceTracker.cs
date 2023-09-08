@@ -6,7 +6,7 @@
 
         private static readonly Dictionary<string, string> connectionNickMap = new Dictionary<string, string>();
 
-        public Task<bool> NickNameAvailable(string userId)
+ /*       public Task<bool> NickNameAvailable(string userId)
         {
             bool available = false;
 
@@ -20,7 +20,7 @@
 
             return Task.FromResult(available);
         }
-
+ */
         public Task SetupNickConnection(string connectionId, string userId)
         {
             lock (connectionNickMap)

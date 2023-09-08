@@ -56,12 +56,12 @@ namespace chat_server.Hubs
 
             var nickName = username;
 
-            var nickAvailable = await _presenceTracker.NickNameAvailable(nickName);
+ /*           var nickAvailable = await _presenceTracker.NickNameAvailable(nickName);
             if (!nickAvailable) 
             {
                 nickName = $"{username}_{Guid.NewGuid().ToString("N").Substring(0, 6)}";
             }
-
+ */
             await _presenceTracker.ConnectionClosed(connecitonId);
 
             var result = await _presenceTracker.ConnectionOpened(nickName);
