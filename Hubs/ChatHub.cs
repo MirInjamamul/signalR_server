@@ -66,6 +66,9 @@ namespace chat_server.Hubs
 
             var result = await _presenceTracker.ConnectionOpened(nickName);
 
+            // Remove when user went offline
+            await _presenceTracker.SetupNickConnection(connecitonId, nickName);
+
             if(result.UserJoined)
             {
                 await Clients.All.SendAsync("UserConnected", nickName);
