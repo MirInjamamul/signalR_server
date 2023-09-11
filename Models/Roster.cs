@@ -10,7 +10,14 @@ namespace chat_server.Models
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; } = String.Empty;
 
+        [BsonElement("userid")]
         public string UserId { get; set; } = String.Empty;
+
+        [BsonElement("nick")]
+        public string NickName { get; set; } = String.Empty;
+
+        [BsonElement("photo")]
+        public string Photo { get; set; } = String.Empty;
 
         [BsonElement("active")]
         public bool IsActive { get; set; }

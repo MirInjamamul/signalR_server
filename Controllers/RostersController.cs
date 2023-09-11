@@ -88,6 +88,38 @@ namespace chat_server.Controllers
             return NoContent();
         }
 
+        [HttpPut("updateNick/{userId}")]
+        public ActionResult UpdateNick(string userId, [FromBody] string nick)
+        {
+            var existingRoster = _rosterService.Get(userId);
+            
+            if(existingRoster == null)
+            {
+                return NotFound($"Roster with ID = {userId} Not Found");
+            }
+
+            existingRoster.NickName = nick;
+            _rosterService.Update(userId, existingRoster);
+
+            return NoContent();
+        }
+
+        [HttpPut("updatePhoto/{userId}")]
+        public ActionResult UpdatePhoto(string userId, [FromBody] string photo)
+        {
+            var existingRoster = _rosterService.Get(userId);
+
+            if (existingRoster == null)
+            {
+                return NotFound($"Roster with ID = {userId} Not Found");
+            }
+
+            existingRoster.Photo = photo;
+            _rosterService.Update(userId, existingRoster);
+
+            return NoContent();
+        }
+
         // DELETE api/<RostersController>/5
         [HttpDelete("{id}")]
         public ActionResult Delete(string id)
