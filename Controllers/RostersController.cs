@@ -40,6 +40,15 @@ namespace chat_server.Controllers
         [HttpPost]
         public ActionResult<Roster> Post([FromBody] Roster roster)
         {
+
+            var exitstingRoster = _rosterService.Get(roster.UserId);
+
+            // Can't create with same userId
+            if (exitstingRoster != null)
+            {
+                return BadRequest(exitstingRoster);
+            }
+
             _rosterService.Create(roster);
 
             return CreatedAtAction(nameof(Get), new { id = roster.Id }, roster);
