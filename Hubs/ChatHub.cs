@@ -24,11 +24,11 @@ namespace chat_server.Hubs
                 await Clients.Caller.SendAsync("signalRConnected", "Connected to server");
 
                 // Send Notice to everyone
-                await Clients.All.SendAsync("UserConnected", Context.ConnectionId);
+                //await Clients.All.SendAsync("UserConnected", Context.ConnectionId);
 
                 // Broadcase online users to everyone
-                var currentUsers = await _presenceTracker.GetOnlineUsers();
-                await Clients.All.SendAsync("onlineUsers", currentUsers);
+                //var currentUsers = await _presenceTracker.GetOnlineUsers();
+                //await Clients.All.SendAsync("onlineUsers", currentUsers);
             }
 
             await base.OnConnectedAsync();

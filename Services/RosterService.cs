@@ -27,6 +27,11 @@ namespace chat_server.Services
             return _rosters.Find(roster => roster.UserId == id).FirstOrDefault();
         }
 
+        public List<Roster> GetOnlineRoster(string[] followerId)
+        {
+            return _rosters.Find(roster => followerId.Contains(roster.UserId) && roster.IsActive).ToList();
+        }
+
         public void Remove(string id)
         {
             _rosters.DeleteOne(roster => roster.Id == id);

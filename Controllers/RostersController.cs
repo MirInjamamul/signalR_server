@@ -36,6 +36,24 @@ namespace chat_server.Controllers
             return roster;
         }
 
+        [HttpGet("online/{userId}")]
+        public ActionResult<List<Roster>> GetRoster(string userId) 
+        {
+            var roster = _rosterService.Get(userId);
+
+            if(roster == null)
+            {
+                return NotFound($"Roster with Id = {userId} not found");
+            }
+
+            List<Roster> demo = new List<Roster>();
+
+            demo = _rosterService.GetOnlineRoster(roster.Follower);
+
+            return demo;
+
+        }
+
         // POST api/<RostersController>
         [HttpPost]
         public ActionResult<Roster> Post([FromBody] Roster roster)
