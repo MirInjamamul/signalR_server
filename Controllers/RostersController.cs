@@ -123,8 +123,13 @@ namespace chat_server.Controllers
         }
 
         [HttpPut("updateNick/{userId}")]
-        public ActionResult UpdateNick(string userId, [FromBody] string nick)
+        public ActionResult UpdateNick(string userId, [FromBody] NickModel nickModel)
         {
+            if(nickModel == null || string.IsNullOrWhiteSpace(nickModel.NickName))
+            {
+                return BadRequest("Invalid Request Body");
+            }
+
             var existingRoster = _rosterService.Get(userId);
             
             if(existingRoster == null)
@@ -132,15 +137,21 @@ namespace chat_server.Controllers
                 return NotFound($"Roster with ID = {userId} Not Found");
             }
 
-            existingRoster.NickName = nick;
+            existingRoster.NickName = nickModel.NickName;
             _rosterService.Update(userId, existingRoster);
 
             return NoContent();
         }
 
         [HttpPut("updatePhoto/{userId}")]
-        public ActionResult UpdatePhoto(string userId, [FromBody] string photo)
+        public ActionResult UpdatePhoto(string userId, [FromBody] PhotoModel photoModel)
         {
+
+            if(photoModel == null || string.IsNullOrWhiteSpace(photoModel.Photo))
+            {
+                return BadRequest("Invalid Request Body");
+            }
+
             var existingRoster = _rosterService.Get(userId);
 
             if (existingRoster == null)
@@ -148,7 +159,7 @@ namespace chat_server.Controllers
                 return NotFound($"Roster with ID = {userId} Not Found");
             }
 
-            existingRoster.Photo = photo;
+            existingRoster.Photo = photoModel.Photo;
             _rosterService.Update(userId, existingRoster);
 
             return NoContent();
