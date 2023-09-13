@@ -88,9 +88,16 @@ namespace chat_server.Controllers
             return NoContent();
         }
 
+        // update Folloer list
         [HttpPut("follower/{userId}")]
-        public ActionResult AddFollower(string userId, [FromBody] string followerId)
+        public ActionResult AddFollower(string userId, [FromBody] FollowerModel followerModel)
         {
+
+            if(followerModel == null || string.IsNullOrWhiteSpace(followerModel.FollowerId))
+            {
+                return BadRequest("Invalid Request Body");
+            }
+
             var existingRoster = _rosterService.Get(userId);
             string[] result;
             if (existingRoster == null)
@@ -105,7 +112,7 @@ namespace chat_server.Controllers
                     result[i] = existingRoster.Follower[i];
                 }
 
-                result[newLength - 1] = followerId;
+                result[newLength - 1] = followerModel.FollowerId;
             }
 
             existingRoster.Follower = result;
