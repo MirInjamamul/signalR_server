@@ -29,7 +29,11 @@ namespace chat_server.Services
 
         public List<Roster> GetOnlineRoster(string[] followerId)
         {
-            return _rosters.Find(roster => followerId.Contains(roster.UserId) && roster.IsActive).ToList();
+            var _onlineRoster = _rosters.Find(roster => followerId.Contains(roster.UserId) && roster.IsActive).ToList();
+
+            // Return first 12 or fewer if not avaialble
+
+            return _onlineRoster.Take(12).ToList();
         }
 
         public void Remove(string id)
