@@ -18,8 +18,13 @@ services:
     image: mongo:latest
     ports:
       - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db   # Mount a named volume for MongoDB data
     networks:
       - mynetwork
 
 networks:
   mynetwork:
+
+volumes:
+  mongodb_data:   # Define a named volume for MongoDB data

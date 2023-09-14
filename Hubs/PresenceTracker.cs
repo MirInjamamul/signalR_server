@@ -34,6 +34,25 @@
             return Task.FromResult(0);
         }
 
+        public Task<string> GetConnectionIdByUserId(string userId) 
+        {
+            lock(connectionNickMap)
+            {
+                foreach (var item in connectionNickMap)
+                {
+                    if(item.Value == userId)
+                    {
+                        return Task.FromResult(item.Key);
+                    }
+                }
+            }
+
+
+            return null;
+            
+        }
+
+
         public Task<ConnectionOpenedResult> ConnectionOpened(string userId)
         {
             var joined = false;
