@@ -38,7 +38,7 @@ namespace chat_server.Services
 
         public void Remove(string id)
         {
-            _rosters.DeleteOne(roster => roster.Id == id);
+            _rosters.DeleteOne(roster => roster.UserId == id);
         }
 
         public void Update(string id, Roster roster)

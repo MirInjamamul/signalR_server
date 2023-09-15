@@ -166,19 +166,19 @@ namespace chat_server.Controllers
         }
 
         // DELETE api/<RostersController>/5
-        [HttpDelete("{id}")]
-        public ActionResult Delete(string id)
+        [HttpDelete("{userId}")]
+        public ActionResult Delete(string userId)
         {
-            var roster = _rosterService.Get(id);
+            var roster = _rosterService.Get(userId);
 
             if (roster == null)
             {
-                return NotFound($"Roster with Id = {id} not found");
+                return NotFound($"Roster with Id = {userId} not found");
             }
 
-            _rosterService.Remove(id);
+            _rosterService.Remove(userId);
 
-            return Ok($"Roster with id = {id} is deleted");
+            return Ok($"Roster with id = {userId} is deleted");
         }
     }
 }

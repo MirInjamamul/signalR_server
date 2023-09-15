@@ -84,6 +84,7 @@ namespace chat_server.Hubs
             Clients.All.SendAsync("ReceiveUser", user);
         }
 
+        // Send to one - one mesage
         public async void BroadcastMessage(string receiverId, string message)
         {
             var connectionId = await _presenceTracker.GetConnectionIdByUserId(receiverId);
@@ -96,7 +97,7 @@ namespace chat_server.Hubs
             await Clients.Client(connectionId).SendAsync("ReceiveMessage", messageModel);
         }
 
-        // Send to one - one mesage
+        // Send to one - one Live Match Invitation mesage
         public void LiveInviteToUser(String connectionId, String senderId, String roomId, String name, String photo, String message)
         {
             LiveMatch liveMatch = new LiveMatch();
