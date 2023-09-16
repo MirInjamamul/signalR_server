@@ -93,7 +93,7 @@
                 if (connectionNickMap.ContainsKey(userId)) 
                 { 
                     var nick = connectionNickMap[userId];
-                    onlineUsers.Remove(nick);
+                    connectionNickMap.Remove(nick);
                     left = true;
                 }
             }
