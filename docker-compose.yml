@@ -22,6 +22,10 @@ services:
       - mongodb_data:/data/db   # Mount a named volume for MongoDB data
     networks:
       - mynetwork
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongo_cloud
+      MONGO_INITDB_ROOT_PASSWORD: 2BU9TSUeYCVZ
+
 
 networks:
   mynetwork:
