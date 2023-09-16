@@ -25,6 +25,8 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: mongo_cloud
       MONGO_INITDB_ROOT_PASSWORD: 2BU9TSUeYCVZ
+      MONGO_INITDB_AUTH_MECHANISM: SCRAM-SHA-1
+    command: mongod --auth
 
 
 networks:
