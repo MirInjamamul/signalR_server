@@ -40,16 +40,16 @@ namespace chat_server.Hubs
         public override async Task OnDisconnectedAsync(Exception exception)
         {
             var user = Context.ConnectionId;
-            var result = await _presenceTracker.ConnectionClosed(user);
+            //var result = await _presenceTracker.ConnectionClosed(user);
 
-            if (result.UserLeft)
-            {
-                await Clients.All.SendAsync("UserDisconnected", "User Disconnected");
-            }
+            //if (result.UserLeft)
+            //{
+            //    await Clients.All.SendAsync("UserDisconnected", "User Disconnected");
+           // }
 
             // Broadcast online users to All
-            var currentUsers = await _presenceTracker.GetOnlineUsers();
-            await Clients.All.SendAsync("onlineUsers", currentUsers);
+           // var currentUsers = await _presenceTracker.GetOnlineUsers();
+           // await Clients.All.SendAsync("onlineUsers", currentUsers);
 
             var item = _presenceTracker.Logout(user);
 
@@ -116,21 +116,26 @@ namespace chat_server.Hubs
 
         public async void SendPrivateMessage(string toUserId, string message)
         {
-            try { 
+            try
+            {
                 string fromConnectionId = Context.ConnectionId;
                 string fromUserId = _presenceTracker.GetUserId(fromConnectionId);
 
                 List<UserDetail> toUserDetail = _presenceTracker.GetUserDetail(toUserId);
 
-                if (toUserDetail.Count != 0) 
+
+
+                if (toUserDetail.Count != 0)
                 {
                     foreach (UserDetail userDetail in toUserDetail)
                     {
-                        await Clients.Client(userDetail.ConnectionId).SendAsync("ReceiveMessage", message);
+                        MessageModel messageModel = new MessageModel { From = fromUserId, To = userDetail.UserId, Message = message };
+                        await Clients.Client(userDetail.ConnectionId).SendAsync("ReceiveMessage", messageModel);
                     }
                 }
 
-            }catch { }
+            }
+            catch { }
         }
 
         // Send to one - one Live Match Invitation mesage
