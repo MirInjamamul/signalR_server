@@ -72,17 +72,17 @@
             return Task.FromResult(new ConnectionOpenedResult { UserJoined = joined});
         }
 
-        public Task<ConnectionClosedResult> ConnectionClosed(string userId)
+        public Task<ConnectionClosedResult> ConnectionClosed(string connectionId)
         {
             var left = false;
             lock (onlineUsers)
             {
-                if (onlineUsers.ContainsKey(userId))
+                if (onlineUsers.ContainsKey(connectionId))
                 {
-                    onlineUsers[userId] -= 1;
-                    if (onlineUsers[userId] <= 0)
+                    onlineUsers[connectionId] -= 1;
+                    if (onlineUsers[connectionId] <= 0)
                     {
-                        onlineUsers.Remove(userId);
+                        onlineUsers.Remove(connectionId);
                         left = true;
                     }
                 }
@@ -90,10 +90,10 @@
 
             lock (connectionNickMap)
             {
-                if (connectionNickMap.ContainsKey(userId)) 
+                if (connectionNickMap.ContainsKey(connectionId)) 
                 { 
-                    var nick = connectionNickMap[userId];
-                    connectionNickMap.Remove(nick);
+                    var nickItem = connectionNickMap[connectionId];
+                    connectionNickMap.Remove(nickItem);
                     left = true;
                 }
             }

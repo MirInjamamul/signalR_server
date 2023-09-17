@@ -15,9 +15,9 @@ namespace chat_server.Hubs
 
         public override async Task OnConnectedAsync()
         {
-            var user = Context.User.Identity.Name ?? Context.ConnectionId;
-            var result =  await _presenceTracker.ConnectionOpened(user);
-
+            var user = Context.ConnectionId;
+            //var result =  await _presenceTracker.ConnectionOpened(user);
+            /*
             if (result.UserJoined)
             {
                 // Send Notice to Caller Only
@@ -30,13 +30,16 @@ namespace chat_server.Hubs
                 //var currentUsers = await _presenceTracker.GetOnlineUsers();
                 //await Clients.All.SendAsync("onlineUsers", currentUsers);
             }
+            */
+
+            await Clients.Caller.SendAsync("ConnectionId", Context.ConnectionId);
 
             await base.OnConnectedAsync();
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            var user = Context.User.Identity.Name ?? Context.ConnectionId;
+            var user = Context.ConnectionId;
             var result = await _presenceTracker.ConnectionClosed(user);
 
             if (result.UserLeft)
@@ -51,10 +54,11 @@ namespace chat_server.Hubs
             await base.OnDisconnectedAsync(exception);
         }
 
-        public async Task Join(string username, string connecitonId)
+        public async Task Join(string username)
         {
 
             var nickName = username;
+            string connectionId = Context.ConnectionId;
 
  /*           var nickAvailable = await _presenceTracker.NickNameAvailable(nickName);
             if (!nickAvailable) 
@@ -62,12 +66,12 @@ namespace chat_server.Hubs
                 nickName = $"{username}_{Guid.NewGuid().ToString("N").Substring(0, 6)}";
             }
  */
-            await _presenceTracker.ConnectionClosed(connecitonId);
+            //await _presenceTracker.ConnectionClosed(connectionId);
 
             var result = await _presenceTracker.ConnectionOpened(nickName);
 
             // Remove when user went offline
-            await _presenceTracker.SetupNickConnection(connecitonId, nickName);
+            await _presenceTracker.SetupNickConnection(connectionId, nickName);
 
             if(result.UserJoined)
             {
@@ -75,7 +79,7 @@ namespace chat_server.Hubs
             }
 
             var currentUsers = await _presenceTracker.GetOnlineUsers();
-            await Clients.All.SendAsync("onlineUsers", currentUsers);
+            await Clients.Caller.SendAsync("onlineUsers", currentUsers);
 
         }
 
