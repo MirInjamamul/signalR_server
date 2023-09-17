@@ -51,6 +51,10 @@ namespace chat_server.Hubs
             var currentUsers = await _presenceTracker.GetOnlineUsers();
             await Clients.All.SendAsync("onlineUsers", currentUsers);
 
+            var item = _presenceTracker.Logout(user);
+
+            await Clients.All.SendAsync("UserLoggedOut", item);
+
             await base.OnDisconnectedAsync(exception);
         }
 
@@ -81,6 +85,15 @@ namespace chat_server.Hubs
             var currentUsers = await _presenceTracker.GetOnlineUsers();
             await Clients.Caller.SendAsync("onlineUsers", currentUsers);
 
+        }
+
+        public async void Connect(string userId)
+        {
+            var connectionId = Context.ConnectionId;
+
+            UserDetail userDetail = _presenceTracker.Login(connectionId, userId);
+
+            await Clients.All.SendAsync("UserLogged", userDetail);
         }
 
         public void BroadcastUser(User user)

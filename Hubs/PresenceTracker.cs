@@ -1,4 +1,6 @@
-﻿namespace chat_server.Hubs
+﻿using chat_server.Models;
+
+namespace chat_server.Hubs
 {
     public class PresenceTracker
     {
@@ -6,21 +8,53 @@
 
         private static readonly Dictionary<string, string> connectionNickMap = new Dictionary<string, string>();
 
- /*       public Task<bool> NickNameAvailable(string userId)
-        {
-            bool available = false;
+        static List<UserDetail> ConnectedUser = new List<UserDetail>();
 
-            lock (onlineUsers)
+        /*       public Task<bool> NickNameAvailable(string userId)
+               {
+                   bool available = false;
+
+                   lock (onlineUsers)
+                   {
+                       if (!onlineUsers.ContainsKey(userId) && userId != "system")
+                       {
+                           available = true;
+                       }
+                   }
+
+                   return Task.FromResult(available);
+               }
+
+        */
+
+        public UserDetail Login(string connectionId, string userId)
+        {
+            if (ConnectedUser.Count(x => x.ConnectionId == connectionId) == 0)
             {
-                if (!onlineUsers.ContainsKey(userId) && userId != "system")
+                ConnectedUser.Add(new UserDetail
                 {
-                    available = true;
-                }
+                    ConnectionId = connectionId,
+                    UserId = userId
+                });
             }
 
-            return Task.FromResult(available);
+            UserDetail currentUser  = ConnectedUser.Where(u => u.ConnectionId == connectionId).FirstOrDefault();
+
+            return currentUser;
         }
- */
+
+        public UserDetail Logout(string connectionId)
+        {
+            var item = ConnectedUser.FirstOrDefault(x => x.ConnectionId == connectionId);
+
+            if (item != null)
+            { 
+                ConnectedUser.Remove(item);
+            }
+
+            return item;
+        }
+        
         public Task SetupNickConnection(string connectionId, string userId)
         {
             lock (connectionNickMap)
