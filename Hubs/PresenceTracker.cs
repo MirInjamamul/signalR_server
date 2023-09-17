@@ -86,6 +86,20 @@ namespace chat_server.Hubs
             
         }
 
+        public string GetUserId(string connectionId)
+        { 
+            string userId = ConnectedUser.Where(u => u.ConnectionId == connectionId).Select(u => u.UserId).FirstOrDefault();
+
+            return userId;
+        }
+
+        public List<UserDetail> GetUserDetail(string userId)
+        {
+            List<UserDetail> toUser = ConnectedUser.Where(x => x.UserId == userId).ToList();
+
+            return toUser;
+        }
+
 
         public Task<ConnectionOpenedResult> ConnectionOpened(string userId)
         {
@@ -142,6 +156,8 @@ namespace chat_server.Hubs
                 return Task.FromResult(onlineUsers.Keys.ToArray());
             }
         }
+
+
     }
 }
 

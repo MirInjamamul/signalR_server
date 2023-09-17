@@ -114,6 +114,25 @@ namespace chat_server.Hubs
             await Clients.Client(connectionId).SendAsync("ReceiveMessage", messageModel);
         }
 
+        public async void SendPrivateMessage(string toUserId, string message)
+        {
+            try { 
+                string fromConnectionId = Context.ConnectionId;
+                string fromUserId = _presenceTracker.GetUserId(fromConnectionId);
+
+                List<UserDetail> toUserDetail = _presenceTracker.GetUserDetail(toUserId);
+
+                if (toUserDetail.Count != 0) 
+                {
+                    foreach (UserDetail userDetail in toUserDetail)
+                    {
+                        await Clients.Client(userDetail.ConnectionId).SendAsync("ReceiveMessage", message);
+                    }
+                }
+
+            }catch { }
+        }
+
         // Send to one - one Live Match Invitation mesage
         public void LiveInviteToUser(String connectionId, String senderId, String roomId, String name, String photo, String message)
         {
