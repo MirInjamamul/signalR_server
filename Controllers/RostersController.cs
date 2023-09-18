@@ -67,6 +67,8 @@ namespace chat_server.Controllers
                 return BadRequest(exitstingRoster);
             }
 
+            roster.Follower = new string[] { };
+
             _rosterService.Create(roster);
 
             return CreatedAtAction(nameof(Get), new { id = roster.Id }, roster);

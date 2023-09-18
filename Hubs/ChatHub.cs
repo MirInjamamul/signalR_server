@@ -105,17 +105,6 @@ namespace chat_server.Hubs
         }
 
         // Send to one - one mesage
-        public async void BroadcastMessage(string senderId, string receiverId, string message)
-        {
-            var connectionId = await _presenceTracker.GetConnectionIdByUserId(receiverId);
-
-            MessageModel messageModel = new MessageModel();
-            messageModel.Message = message;
-            messageModel.SenderId = senderId;
-            messageModel.To = receiverId;
-
-            await Clients.Client(connectionId).SendAsync("ReceiveMessage", messageModel);
-        }
 
         public async void SendPrivateMessage(string toUserId, string message)
         {
