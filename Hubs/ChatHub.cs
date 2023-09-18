@@ -1,4 +1,5 @@
 ﻿using chat_server.Models;
+using chat_server.Services;
 using Microsoft.AspNetCore.SignalR;
 
 namespace chat_server.Hubs
@@ -7,10 +8,12 @@ namespace chat_server.Hubs
     {
 
         private readonly PresenceTracker _presenceTracker;
+        private readonly IRosterService _rosterService;
 
-        public ChatHub(PresenceTracker presenceTracker)
+        public ChatHub(PresenceTracker presenceTracker, IRosterService rosterService)
         {
             _presenceTracker = presenceTracker;
+            _rosterService = rosterService;
         }
 
         public override async Task OnConnectedAsync()
@@ -108,7 +111,7 @@ namespace chat_server.Hubs
 
             MessageModel messageModel = new MessageModel();
             messageModel.Message = message;
-            messageModel.From = senderId;
+            messageModel.SenderId = senderId;
             messageModel.To = receiverId;
 
             await Clients.Client(connectionId).SendAsync("ReceiveMessage", messageModel);
@@ -121,21 +124,28 @@ namespace chat_server.Hubs
                 string fromConnectionId = Context.ConnectionId;
                 string fromUserId = _presenceTracker.GetUserId(fromConnectionId);
 
+                string fromUsername = _getUserName(fromUserId);
+
                 List<UserDetail> toUserDetail = _presenceTracker.GetUserDetail(toUserId);
-
-
 
                 if (toUserDetail.Count != 0)
                 {
                     foreach (UserDetail userDetail in toUserDetail)
                     {
-                        MessageModel messageModel = new MessageModel { From = fromUserId, To = userDetail.UserId, Message = message };
+                        MessageModel messageModel = new MessageModel { SenderId = fromUserId, SenderUserName = fromUsername, To = userDetail.UserId, Message = message };
                         await Clients.Client(userDetail.ConnectionId).SendAsync("ReceiveMessage", messageModel);
                     }
                 }
 
             }
             catch { }
+        }
+
+        public string _getUserName(string userId) 
+        { 
+            var userDetails = _rosterService.Get(userId);
+
+            return userDetails.NickName;
         }
 
         // Send to one - one Live Match Invitation mesage
