@@ -54,6 +54,35 @@ namespace chat_server.Controllers
 
         }
 
+        [HttpGet("suggestion/{userId}")]
+        public ActionResult<List<Roster>> GetSuggestionRoster(string userId)
+        {
+            var roster = _rosterService.Get(userId);
+
+            if (roster == null)
+            {
+                return NotFound($"Roster with Id = {userId} not found");
+            }
+
+            List<Roster> demo = new List<Roster>();
+
+            if (roster.Follower.Length > 20)
+            {
+                demo = _rosterService.GetSuggestionRoster(roster.Follower);
+
+                return demo;
+            }
+            else
+            {
+                demo = _rosterService.Get();
+
+                Random random = new Random();
+                List<Roster> randomRoster = demo.OrderBy(x => random.Next()).Take(10).ToList();
+
+                return randomRoster;
+            }
+        }
+
         // POST api/<RostersController>
         [HttpPost]
         public ActionResult<Roster> Post([FromBody] Roster roster)

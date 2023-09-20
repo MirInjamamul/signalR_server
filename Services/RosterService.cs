@@ -36,6 +36,15 @@ namespace chat_server.Services
             return _onlineRoster.Take(12).ToList();
         }
 
+        public List<Roster> GetSuggestionRoster(string[] followerId)
+        {
+            var _onlineRoster = _rosters.Find(roster => followerId.Contains(roster.UserId)).ToList();
+
+            Random random = new Random();
+
+            return _onlineRoster.OrderBy(x => random.Next()).Take(10).ToList();
+        }
+
         public void Remove(string id)
         {
             _rosters.DeleteOne(roster => roster.UserId == id);

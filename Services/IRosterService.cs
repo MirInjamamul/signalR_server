@@ -7,6 +7,7 @@ namespace chat_server.Services
         List<Roster> Get();
         Roster Get(string userId);
         List<Roster> GetOnlineRoster(string[] followerId);
+        List<Roster> GetSuggestionRoster(string[] followerId);
         Roster Create(Roster roster);
         void Update(string id, Roster roster);
         void UpdateFollower(string userId, Roster roster);
