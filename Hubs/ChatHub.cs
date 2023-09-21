@@ -56,6 +56,8 @@ namespace chat_server.Hubs
 
             var item = _presenceTracker.Logout(user);
 
+            _updatePresence(item.UserId, false);
+
             await Clients.All.SendAsync("UserLoggedOut", item);
 
             await base.OnDisconnectedAsync(exception);
@@ -96,6 +98,8 @@ namespace chat_server.Hubs
 
             UserDetail userDetail = _presenceTracker.Login(connectionId, userId);
 
+            _updatePresence(userId, true);
+
             await Clients.All.SendAsync("UserLogged", userDetail);
         }
 
@@ -135,6 +139,17 @@ namespace chat_server.Hubs
             var userDetails = _rosterService.Get(userId);
 
             return userDetails.NickName;
+        }
+
+        public async void _updatePresence(string userId, bool onlineStatus)
+        { 
+            var roster = _rosterService.Get(userId); 
+            
+            if (roster != null) 
+            { 
+                roster.IsActive = onlineStatus;
+                _rosterService.Update(userId, roster);
+            }
         }
 
         // Send to one - one Live Match Invitation mesage

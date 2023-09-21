@@ -19,4 +19,14 @@
     {
         public string Photo { get; set; } = string.Empty;
     }
+
+    public class PresenceModel
+    {
+        public bool Presence { get; set; } = true;
+
+        public static implicit operator bool(PresenceModel v)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

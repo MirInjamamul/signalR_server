@@ -196,6 +196,29 @@ namespace chat_server.Controllers
             return NoContent();
         }
 
+        [HttpPut("updatePresence/{userId}")]
+        public ActionResult UpdatePresence(string userId, [FromBody] PresenceModel onlineStatus)
+        {
+
+            if (onlineStatus == null)
+            {
+                return BadRequest("Invalid Request Body");
+            }
+
+            var existingRoster = _rosterService.Get(userId);
+
+            if (existingRoster == null)
+            {
+                return NotFound($"Roster with ID = {userId} Not Found");
+            }
+
+            existingRoster.IsActive = onlineStatus;
+
+            _rosterService.Update(userId, existingRoster);
+
+            return NoContent();
+        }
+
         // DELETE api/<RostersController>/5
         [HttpDelete("{userId}")]
         public ActionResult Delete(string userId)
