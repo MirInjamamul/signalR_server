@@ -197,10 +197,10 @@ namespace chat_server.Controllers
         }
 
         [HttpPut("updatePresence/{userId}")]
-        public ActionResult UpdatePresence(string userId, [FromBody] PresenceModel onlineStatus)
+        public ActionResult UpdatePresence(string userId, [FromBody] PresenceModel presence)
         {
 
-            if (onlineStatus == null)
+            if (presence == null)
             {
                 return BadRequest("Invalid Request Body");
             }
@@ -212,7 +212,7 @@ namespace chat_server.Controllers
                 return NotFound($"Roster with ID = {userId} Not Found");
             }
 
-            existingRoster.IsActive = onlineStatus;
+            existingRoster.IsActive = presence.Presence;
 
             _rosterService.Update(userId, existingRoster);
 
