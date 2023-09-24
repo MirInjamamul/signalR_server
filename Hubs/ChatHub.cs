@@ -125,8 +125,27 @@ namespace chat_server.Hubs
                 {
                     foreach (UserDetail userDetail in toUserDetail)
                     {
-                        MessageModel messageModel = new MessageModel { SenderId = fromUserId, SenderUserName = fromUsername, To = userDetail.UserId, Message = message };
-                        await Clients.Client(userDetail.ConnectionId).SendAsync("ReceiveMessage", messageModel);
+                        _getUserStatus(userDetail.UserId, toUserId, out bool isActive, out bool isFollower);
+                        if (isActive)
+                        {
+                            if (isFollower)
+                            {
+                                MessageModel messageModel = new MessageModel { SenderId = fromUserId, SenderUserName = fromUsername, To = userDetail.UserId, Message = message };
+                                await Clients.Client(userDetail.ConnectionId).SendAsync("ReceiveMessage", messageModel);
+                            }
+                            else 
+                            {
+                                MessageModel messageModel = new MessageModel { SenderId = fromUserId, SenderUserName = fromUsername, To = userDetail.UserId, Message = message };
+                                await Clients.Client(userDetail.ConnectionId).SendAsync("ReceiveRequestMessage", messageModel);
+                            }
+                            
+                        }
+                        else
+                        { 
+                            // TODO send push notification
+
+                        }
+                        
                     }
                 }
 
@@ -149,6 +168,52 @@ namespace chat_server.Hubs
             { 
                 roster.IsActive = onlineStatus;
                 _rosterService.Update(userId, roster);
+            }
+        }
+
+        public bool _getActiveStatus(string userId) 
+        {
+            var roster = _rosterService.Get(userId);
+            if (roster != null)
+            {
+                return roster.IsActive;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public void _getUserStatus(string userId, string toUserId, out bool isActive, out bool isFollower)
+        {
+            var roster = _rosterService.Get(userId);
+
+            var followerRoster = _rosterService.Get(toUserId);
+
+            if (roster != null)
+            {
+                isActive = roster.IsActive;
+            }
+            else
+            { 
+                isActive=false;
+                
+            }
+
+            if (followerRoster != null)
+            {
+                if (followerRoster.Follower.Contains(userId))
+                {
+                    isFollower = true;
+                }
+                else
+                {
+                    isFollower = false;
+                }
+            }
+            else
+            {
+                isFollower = false;
             }
         }
 
