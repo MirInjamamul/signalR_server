@@ -125,10 +125,10 @@ namespace chat_server.Hubs
                 {
                     foreach (UserDetail userDetail in toUserDetail)
                     {
-                        _getUserStatus(userDetail.UserId, toUserId, out bool isActive, out bool isFollower);
-                        if (isActive)
+                        bool []userStatus = _getUserStatus(userDetail.UserId, toUserId);
+                        if (userStatus[0])
                         {
-                            if (isFollower)
+                            if (userStatus[1])
                             {
                                 MessageModel messageModel = new MessageModel { SenderId = fromUserId, SenderUserName = fromUsername, To = userDetail.UserId, Message = message };
                                 await Clients.Client(userDetail.ConnectionId).SendAsync("ReceiveMessage", messageModel);
@@ -171,32 +171,20 @@ namespace chat_server.Hubs
             }
         }
 
-        public bool _getActiveStatus(string userId) 
+        public bool[] _getUserStatus(string userId, string toUserId)
         {
-            var roster = _rosterService.Get(userId);
-            if (roster != null)
-            {
-                return roster.IsActive;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public void _getUserStatus(string userId, string toUserId, out bool isActive, out bool isFollower)
-        {
+            bool []data = new bool[2];
             var roster = _rosterService.Get(userId);
 
             var followerRoster = _rosterService.Get(toUserId);
 
             if (roster != null)
             {
-                isActive = roster.IsActive;
+                data[0] = roster.IsActive;
             }
             else
-            { 
-                isActive=false;
+            {
+                data[0] = false;
                 
             }
 
@@ -204,17 +192,19 @@ namespace chat_server.Hubs
             {
                 if (followerRoster.Follower.Contains(userId))
                 {
-                    isFollower = true;
+                    data[1] = true;
                 }
                 else
                 {
-                    isFollower = false;
+                    data[1] = false;
                 }
             }
             else
             {
-                isFollower = false;
+                data[1] = false;
             }
+
+            return data;
         }
 
         // Send to one - one Live Match Invitation mesage
