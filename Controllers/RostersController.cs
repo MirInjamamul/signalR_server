@@ -104,7 +104,7 @@ namespace chat_server.Controllers
             return CreatedAtAction(nameof(Get), new { id = roster.Id }, roster);
         }
 
-        [HttpPost]
+        [HttpGet("last_online")]
         public ActionResult<List<Roster>> LastOnline([FromBody] UserIdModel userList)
         {
 
