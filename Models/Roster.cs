@@ -21,6 +21,8 @@ namespace chat_server.Models
 
         [BsonElement("active")]
         public bool IsActive { get; set; }
+        [BsonElement("lastonline")]
+        public DateTime LastOnline { get; set; }
 
         [BsonElement("follower")]
         public string[]? Follower { get; set; }

@@ -167,6 +167,8 @@ namespace chat_server.Hubs
             if (roster != null) 
             { 
                 roster.IsActive = onlineStatus;
+                roster.LastOnline = DateTime.Now;
+
                 _rosterService.Update(userId, roster);
             }
         }

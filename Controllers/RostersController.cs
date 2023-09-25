@@ -97,11 +97,28 @@ namespace chat_server.Controllers
             }
 
             roster.Follower = new string[] { };
+            roster.LastOnline = DateTime.Now;
 
             _rosterService.Create(roster);
 
             return CreatedAtAction(nameof(Get), new { id = roster.Id }, roster);
         }
+
+        [HttpPost]
+        public ActionResult<List<Roster>> LastOnline([FromBody] UserIdModel userList)
+        {
+
+            if(userList == null || userList.UserId.Length < 1) 
+            { 
+                return BadRequest("Request List Can't be Null");
+            }
+
+            var lastOnlineRoster = _rosterService.GetLastOnlineRoster(userList.UserId);
+
+            return lastOnlineRoster;
+        }
+
+
 
         // PUT api/<RostersController>/5
         [HttpPut("{id}")]

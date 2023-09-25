@@ -24,4 +24,9 @@
     {
         public bool Presence { get; set; } = true;
     }
+
+    public class UserIdModel 
+    { 
+        public string[] UserId { get; set; }
+    }
 }

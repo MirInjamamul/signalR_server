@@ -45,6 +45,13 @@ namespace chat_server.Services
             return _onlineRoster.OrderBy(x => random.Next()).Take(10).ToList();
         }
 
+        public List<Roster> GetLastOnlineRoster(string[] userId)
+        {
+            var _lastOnlineRoster = _rosters.Find(roster => userId.Contains(roster.UserId)).ToList();
+
+            return _lastOnlineRoster;
+        }
+
         public void Remove(string id)
         {
             _rosters.DeleteOne(roster => roster.UserId == id);
