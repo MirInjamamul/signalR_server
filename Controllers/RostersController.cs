@@ -107,7 +107,7 @@ namespace chat_server.Controllers
         [HttpGet("last_online")]
         public ActionResult<List<Roster>> LastOnline([FromBody] UserIdModel userList)
         {
-
+8
             if(userList == null || userList.UserId.Length < 1) 
             { 
                 return BadRequest("Request List Can't be Null");
@@ -166,6 +166,35 @@ namespace chat_server.Controllers
             existingRoster.Follower = result;
 
             _rosterService.UpdateFollower(userId, existingRoster);
+
+            return NoContent();
+        }
+
+        [HttpPut("unfollower/{userId}")]
+        public ActionResult RemoveFollower(string userId, [FromBody] FollowerModel followerModel)
+        {
+
+            if (followerModel == null || string.IsNullOrWhiteSpace(followerModel.FollowerId))
+            {
+                return BadRequest("Invalid Request Body");
+            }
+
+            var existingRoster = _rosterService.Get(userId);
+            string[] result;
+            if (existingRoster == null)
+            {
+                return NotFound($"Roster with Id = {userId} not found");
+            }
+
+            if(existingRoster.Follower.Contains(followerModel.FollowerId))
+            {
+                // Create a new array excluding the follower to be removed
+                var updatedFollwer = existingRoster.Follower.Where(id => id != followerModel.FollowerId).ToArray();
+                existingRoster.Follower = updatedFollwer;
+
+                //update the roster
+                _rosterService.UpdateFollower(userId, existingRoster);
+            }
 
             return NoContent();
         }
