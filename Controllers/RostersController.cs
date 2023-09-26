@@ -107,7 +107,6 @@ namespace chat_server.Controllers
         [HttpGet("last_online")]
         public ActionResult<List<Roster>> LastOnline([FromBody] UserIdModel userList)
         {
-8
             if(userList == null || userList.UserId.Length < 1) 
             { 
                 return BadRequest("Request List Can't be Null");
