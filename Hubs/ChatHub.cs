@@ -115,9 +115,9 @@ namespace chat_server.Hubs
             try
             {
                 string fromConnectionId = Context.ConnectionId;
-                string fromUserId = _presenceTracker.GetUserId(fromConnectionId);
+                string senderUserId = _presenceTracker.GetUserId(fromConnectionId);
 
-                string fromUsername = _getUserName(fromUserId);
+                string fromUsername = _getUserName(senderUserId);
 
                 List<UserDetail> toUserDetail = _presenceTracker.GetUserDetail(toUserId);
 
@@ -125,17 +125,17 @@ namespace chat_server.Hubs
                 {
                     foreach (UserDetail userDetail in toUserDetail)
                     {
-                        bool []userStatus = _getUserStatus(userDetail.UserId, toUserId);
-                        if (userStatus[0])
+                        bool []userStatus = _getUserStatus(senderUserId, toUserId);
+                        if (userStatus[0]) // receiver is online or not
                         {
                             if (userStatus[1])
                             {
-                                MessageModel messageModel = new MessageModel { SenderId = fromUserId, SenderUserName = fromUsername, To = userDetail.UserId, Message = message };
+                                MessageModel messageModel = new MessageModel { SenderId = senderUserId, SenderUserName = fromUsername, To = userDetail.UserId, Message = message };
                                 await Clients.Client(userDetail.ConnectionId).SendAsync("ReceiveMessage", messageModel);
                             }
                             else 
                             {
-                                MessageModel messageModel = new MessageModel { SenderId = fromUserId, SenderUserName = fromUsername, To = userDetail.UserId, Message = message };
+                                MessageModel messageModel = new MessageModel { SenderId = senderUserId, SenderUserName = fromUsername, To = userDetail.UserId, Message = message };
                                 await Clients.Client(userDetail.ConnectionId).SendAsync("ReceiveRequestMessage", messageModel);
                             }
                             
@@ -173,37 +173,29 @@ namespace chat_server.Hubs
             }
         }
 
-        public bool[] _getUserStatus(string userId, string toUserId)
+        public bool[] _getUserStatus(string senderUserId, string receiverUserId)
         {
             bool []data = new bool[2];
-            var roster = _rosterService.Get(userId);
+            var receiverRoster = _rosterService.Get(receiverUserId);
 
-            var followerRoster = _rosterService.Get(toUserId);
+            if (receiverRoster != null)
+            {
+                data[0] = receiverRoster.IsActive;
 
-            if (roster != null)
-            {
-                data[0] = roster.IsActive;
-            }
-            else
-            {
-                data[0] = false;
-                
-            }
-
-            if (followerRoster != null)
-            {
-                if (followerRoster.Follower.Contains(userId))
+                if (receiverRoster.Follower.Contains(senderUserId))
                 {
                     data[1] = true;
                 }
-                else
+                else 
                 {
                     data[1] = false;
                 }
             }
             else
             {
+                data[0] = false;
                 data[1] = false;
+                
             }
 
             return data;
