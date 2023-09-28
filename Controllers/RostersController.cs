@@ -76,6 +76,9 @@ namespace chat_server.Controllers
             {
                 demo = _rosterService.Get();
 
+                // Exclude myself from the List
+                demo = demo.Where(r => r.UserId != userId).ToList();
+
                 Random random = new Random();
                 List<Roster> randomRoster = demo.OrderBy(x => random.Next()).Take(10).ToList();
 
