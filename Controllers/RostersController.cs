@@ -172,7 +172,7 @@ namespace chat_server.Controllers
             return roster;
         }
 
-        [HttpGet("blocklist")]
+        [HttpPost("getBlockUser")]
         public ActionResult<BlockedResponseModel> GetBlockedResult(BlockIdModel blockList)
         {
             var roster = _rosterService.Get(blockList.UserId);
