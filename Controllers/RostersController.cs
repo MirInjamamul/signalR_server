@@ -145,7 +145,16 @@ namespace chat_server.Controllers
 
             string[] result;
 
-            int newLength = roster.Blocked.Length + 1;
+            int newLength = 1;
+
+            try
+            {
+                newLength = roster.Blocked.Length + 1;
+            }
+            catch (Exception e) { 
+            
+            }
+            
             result = new string[newLength];
 
             for (int i = 0; i < roster.Blocked.Length; i++)
