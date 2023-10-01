@@ -100,6 +100,8 @@ namespace chat_server.Controllers
             }
 
             roster.Follower = new string[] { };
+            roster.Blocked = new string[] { };
+
             roster.LastOnline = DateTime.Now;
 
             _rosterService.Create(roster);
@@ -120,6 +122,88 @@ namespace chat_server.Controllers
             return lastOnlineRoster;
         }
 
+        /// <summary>
+        /// BlockList
+        /// </summary>
+        /// <param name="blocklist"></param>
+        /// <returns>Roster</returns>
+        
+        [HttpPost("blocklist")]
+        public ActionResult<Roster> BlockUser([FromBody] BlockIdModel blocklist)
+        {
+            if (blocklist == null)
+            {
+                return BadRequest("Request List Can't be Null");
+            }
+
+            var roster = _rosterService.Get(blocklist.UserId);
+
+            if (roster == null)
+            { 
+                return NotFound();
+            }
+
+            string[] result;
+
+            int newLength = roster.Blocked.Length + 1;
+            result = new string[newLength];
+
+            for (int i = 0; i < roster.Blocked.Length; i++)
+            {
+                result[i] = roster.Blocked[i];
+            }
+
+            result[newLength - 1] = blocklist.BlockId;
+
+            roster.Blocked = result;
+
+            _rosterService.UpdateFollower(blocklist.UserId, roster);
+
+
+            return roster;
+        }
+
+        [HttpGet("blocklist")]
+        public ActionResult<BlockedResponseModel> GetBlockedResult(BlockIdModel blockList)
+        {
+            var roster = _rosterService.Get(blockList.UserId);
+
+            if (roster == null)
+            {
+                return NotFound($"Roster with Id = {blockList.UserId} not found");
+            }
+
+            bool isBlocked = roster.Blocked.Contains(blockList.BlockId);
+
+            BlockedResponseModel response = new BlockedResponseModel {
+                IsBlocked = isBlocked
+            };
+
+            return Ok(response);
+        }
+
+        [HttpDelete("blocklist")]
+        public ActionResult RemoveBlockedUser(BlockIdModel blockList)
+        {
+            var roster = _rosterService.Get(blockList.UserId);
+
+            if (roster == null)
+            {
+                return NotFound($"Roster with Id = {blockList.UserId} not found");
+            }
+
+            if (roster.Blocked.Contains(blockList.BlockId))
+            {
+                // Create a new array excluding the follower to be removed
+                var updatedBlocked = roster.Blocked.Where(id => id != blockList.BlockId).ToArray();
+                roster.Blocked = updatedBlocked;
+
+                //update the roster
+                _rosterService.UpdateFollower(blockList.UserId, roster);
+            }
+
+            return NoContent();
+        }
 
 
         // PUT api/<RostersController>/5

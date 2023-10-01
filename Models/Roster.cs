@@ -26,5 +26,8 @@ namespace chat_server.Models
 
         [BsonElement("follower")]
         public string[]? Follower { get; set; }
+
+        [BsonElement("block")]
+        public string[]? Blocked { get; set; }
     }
 }

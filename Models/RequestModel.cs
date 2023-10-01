@@ -29,4 +29,15 @@
     { 
         public string[] UserId { get; set; }
     }
+
+    public class BlockIdModel 
+    {
+        public string UserId { get; set; } = string.Empty;
+        public string BlockId { get; set; } = string.Empty;
+    }
+
+    public class BlockedResponseModel
+    {
+        public bool IsBlocked { get; set; }
+    }
 }
