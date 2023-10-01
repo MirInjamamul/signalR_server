@@ -143,24 +143,24 @@ namespace chat_server.Controllers
                 return NotFound();
             }
 
-            string[] result;
-
             int newLength = 1;
+            string[] result = new string[newLength];
 
             try
             {
                 newLength = roster.Blocked.Length + 1;
+                result = new string[newLength];
+
+                for (int i = 0; i < roster.Blocked.Length; i++)
+                {
+                    result[i] = roster.Blocked[i];
+                }
             }
             catch (Exception e) { 
             
             }
             
-            result = new string[newLength];
-
-            for (int i = 0; i < roster.Blocked.Length; i++)
-            {
-                result[i] = roster.Blocked[i];
-            }
+            
 
             result[newLength - 1] = blocklist.BlockId;
 
