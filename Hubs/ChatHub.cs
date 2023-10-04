@@ -126,25 +126,29 @@ namespace chat_server.Hubs
                     foreach (UserDetail userDetail in toUserDetail)
                     {
                         bool []userStatus = _getUserStatus(senderUserId, toUserId);
-                        if (userStatus[0]) // receiver is online or not
+                        if (!userStatus[2]) // not blocked
                         {
-                            if (userStatus[1])
+                            if (userStatus[0]) // receiver is online or not
                             {
-                                MessageModel messageModel = new MessageModel { SenderId = senderUserId, SenderUserName = fromUsername, To = userDetail.UserId, Message = message };
-                                await Clients.Client(userDetail.ConnectionId).SendAsync("ReceiveMessage", messageModel);
-                            }
-                            else 
-                            {
-                                MessageModel messageModel = new MessageModel { SenderId = senderUserId, SenderUserName = fromUsername, To = userDetail.UserId, Message = message };
-                                await Clients.Client(userDetail.ConnectionId).SendAsync("ReceiveRequestMessage", messageModel);
-                            }
-                            
-                        }
-                        else
-                        { 
-                            // TODO send push notification
+                                if (userStatus[1]) // request message or not
+                                {
+                                    MessageModel messageModel = new MessageModel { SenderId = senderUserId, SenderUserName = fromUsername, To = userDetail.UserId, Message = message };
+                                    await Clients.Client(userDetail.ConnectionId).SendAsync("ReceiveMessage", messageModel);
+                                }
+                                else
+                                {
+                                    MessageModel messageModel = new MessageModel { SenderId = senderUserId, SenderUserName = fromUsername, To = userDetail.UserId, Message = message };
+                                    await Clients.Client(userDetail.ConnectionId).SendAsync("ReceiveRequestMessage", messageModel);
+                                }
 
+                            }
+                            else
+                            {
+                                // TODO send push notification
+
+                            }
                         }
+                        
                         
                     }
                 }
@@ -190,11 +194,21 @@ namespace chat_server.Hubs
                 {
                     data[1] = false;
                 }
+
+                if (receiverRoster.Blocked.Contains(senderUserId))
+                {
+                    data[2] = true;
+                }
+                else
+                {
+                    data[2] = false;
+                }
             }
             else
             {
                 data[0] = false;
                 data[1] = false;
+                data[2] = false;
                 
             }
 
