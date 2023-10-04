@@ -179,7 +179,7 @@ namespace chat_server.Hubs
 
         public bool[] _getUserStatus(string senderUserId, string receiverUserId)
         {
-            bool []data = new bool[2];
+            bool []data = new bool[3];
             var receiverRoster = _rosterService.Get(receiverUserId);
 
             if (receiverRoster != null)
