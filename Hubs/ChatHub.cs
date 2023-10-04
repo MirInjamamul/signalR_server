@@ -195,7 +195,7 @@ namespace chat_server.Hubs
                     data[1] = false;
                 }
 
-                if (receiverRoster.Blocked.Contains(senderUserId))
+                if (receiverRoster.Blocked != null && receiverRoster.Blocked.Contains(senderUserId))
                 {
                     data[2] = true;
                 }
