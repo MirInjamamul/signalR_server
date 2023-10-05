@@ -1,6 +1,7 @@
 ﻿using chat_server.Models;
 using chat_server.Services;
 using Microsoft.AspNetCore.SignalR;
+using MongoDB.Driver.Core.Connections;
 
 namespace chat_server.Hubs
 {
@@ -216,8 +217,11 @@ namespace chat_server.Hubs
         }
 
         // Send to one - one Live Match Invitation mesage
-        public void LiveInviteToUser(String connectionId, String senderId, String roomId, String name, String photo, String message)
+        public void LiveInviteToUser(String receiverUserId, String senderId, String roomId, String name, String photo, String message)
         {
+
+            List<UserDetail> reveiverUserDetail = _presenceTracker.GetUserDetail(receiverUserId);
+
             LiveMatch liveMatch = new LiveMatch();
             liveMatch.SenderId = senderId;
             liveMatch.RoomId = roomId;
@@ -225,7 +229,10 @@ namespace chat_server.Hubs
             liveMatch.Photo = photo;
             liveMatch.Message = message;
 
-            Clients.Client(connectionId).SendAsync("ReceiveLiveInvitation", liveMatch);
+            foreach (var item in reveiverUserDetail)
+            {
+                Clients.Client(item.ConnectionId).SendAsync("ReceiveLiveInvitation", liveMatch);
+            }            
         }
 
 
