@@ -17,7 +17,7 @@ services:
   mongodb:
     image: mongo:latest
     volumes:
-      - mongodb_data_dev:/data/db   # Mount a named volume for MongoDB data
+      - mongodb_data_dev:/dev_data/db   # Mount a named volume for MongoDB data
     networks:
       - mynetwork
 
