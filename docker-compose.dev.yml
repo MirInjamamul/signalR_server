@@ -8,7 +8,7 @@ services:
       dockerfile: Dockerfile
     ports:
       - "9080:80"
-      - "5443:443"
+      - "4446:443"
     depends_on:
       - mongodb
     networks:
