@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  chat_server:
+  chat_server_dev:
     image: signal
     build:
       context: .
@@ -10,20 +10,20 @@ services:
       - "9080:80"
       - "4446:443"
     depends_on:
-      - mongodb
+      - mongodb_dev
     networks:
-      - mynetwork
+      - mynetwork_dev
 
-  mongodb:
+  mongodb_dev:
     image: mongo:latest
     volumes:
       - mongodb_data_dev:/dev_data/db   # Mount a named volume for MongoDB data
     networks:
-      - mynetwork
+      - mynetwork_dev
 
 
 networks:
-  mynetwork:
+  mynetwork_dev:
 
 volumes:
   mongodb_data_dev:   # Define a named volume for MongoDB data
