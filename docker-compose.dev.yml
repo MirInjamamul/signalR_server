@@ -7,8 +7,8 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8080:80"
-      - "4443:443"
+      - "9080:80"
+      - "5443:443"
     depends_on:
       - mongodb
     networks:
@@ -17,7 +17,7 @@ services:
   mongodb:
     image: mongo:latest
     volumes:
-      - mongodb_data_production:/data/db   # Mount a named volume for MongoDB data
+      - mongodb_data_dev:/data/db   # Mount a named volume for MongoDB data
     networks:
       - mynetwork
 
@@ -26,4 +26,4 @@ networks:
   mynetwork:
 
 volumes:
-  mongodb_data_production:   # Define a named volume for MongoDB data
+  mongodb_data_dev:   # Define a named volume for MongoDB data
