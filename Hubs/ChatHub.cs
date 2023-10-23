@@ -158,6 +158,63 @@ namespace chat_server.Hubs
             catch { }
         }
 
+        public async void SendPrivateFileMessage(string toUserId, string title, string url)
+        {
+            try
+            {
+                string fromConnectionId = Context.ConnectionId;
+                string senderUserId = _presenceTracker.GetUserId(fromConnectionId);
+
+                string fromUsername = _getUserName(senderUserId);
+
+                List<UserDetail> toUserDetail = _presenceTracker.GetUserDetail(toUserId);
+
+                if (toUserDetail.Count != 0)
+                {
+                    foreach (UserDetail userDetail in toUserDetail)
+                    {
+                        bool[] userStatus = _getUserStatus(senderUserId, toUserId);
+                        if (!userStatus[2]) // not blocked
+                        {
+                            if (userStatus[0]) // receiver is online or not
+                            {
+                                FileMessageModel messageModel = new FileMessageModel
+                                {
+                                    Message = new MessageModel
+                                    {
+                                        SenderId = senderUserId,
+                                        SenderUserName = fromUsername,
+                                        To = userDetail.UserId,
+                                        Message = title
+                                    },
+                                    Url = url
+                                };
+
+                                if (userStatus[1]) // request message or not
+                                {
+                                    await Clients.Client(userDetail.ConnectionId).SendAsync("ReceiveFileMessage", messageModel);
+                                }
+                                else
+                                {
+                                    await Clients.Client(userDetail.ConnectionId).SendAsync("ReceiveRequestFileMessage", messageModel);
+                                }
+
+                            }
+                            else
+                            {
+                                // TODO send push notification
+
+                            }
+                        }
+
+
+                    }
+                }
+
+            }
+            catch { }
+        }
+
         public string _getUserName(string userId) 
         { 
             var userDetails = _rosterService.Get(userId);

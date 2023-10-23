@@ -8,4 +8,11 @@
         public string Message { get; set; } = string.Empty;
 
     }
+
+    public class FileMessageModel
+    {
+        public MessageModel Message { get; set; } = new MessageModel();
+        public string Url { get; set; } = string.Empty;
+
+    }
 }
