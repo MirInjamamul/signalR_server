@@ -239,7 +239,7 @@ namespace chat_server.Controllers
             if(followerModel == null || string.IsNullOrWhiteSpace(followerModel.FollowerId))
             {
                 return BadRequest("Invalid Request Body");
-            }
+            }            
 
             var existingRoster = _rosterService.Get(userId);
             string[] result;
@@ -261,6 +261,33 @@ namespace chat_server.Controllers
             existingRoster.Follower = result;
 
             _rosterService.UpdateFollower(userId, existingRoster);
+
+
+            if (followerModel.FollowBack)
+            {
+                existingRoster = _rosterService.Get(followerModel.FollowerId);
+
+                if (existingRoster == null)
+                {
+                    return NotFound($"Roster with Id = {followerModel.FollowerId} not found");
+                }
+                else
+                {
+                    int newLength = existingRoster.Follower.Length + 1;
+                    result = new string[newLength];
+
+                    for (int i = 0; i < existingRoster.Follower.Length; i++)
+                    {
+                        result[i] = existingRoster.Follower[i];
+                    }
+
+                    result[newLength - 1] = userId;
+                }
+
+                existingRoster.Follower = result;
+
+                _rosterService.UpdateFollower(followerModel.FollowerId, existingRoster);
+            }
 
             return NoContent();
         }

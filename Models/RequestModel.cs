@@ -8,6 +8,7 @@
     public class FollowerModel
     {
         public string FollowerId { get; set; } = string.Empty;
+        public bool FollowBack { get; set; } = false;
     }
 
     public class NickModel
