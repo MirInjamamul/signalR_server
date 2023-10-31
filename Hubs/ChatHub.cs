@@ -244,7 +244,7 @@ namespace chat_server.Hubs
             {
                 data[0] = receiverRoster.IsActive;
 
-                if (receiverRoster.Follower.Contains(senderUserId))
+                if (receiverRoster.Follower.Any(follower => follower.UserId == senderUserId))
                 {
                     data[1] = true;
                 }
