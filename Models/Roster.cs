@@ -25,7 +25,7 @@ namespace chat_server.Models
         public DateTime LastOnline { get; set; }
 
         [BsonElement("follower")]
-        public string[]? Follower { get; set; }
+        public List<Follower> Follower { get; set; } = new List<Follower>();
 
         [BsonElement("block")]
         public string[]? Blocked { get; set; }

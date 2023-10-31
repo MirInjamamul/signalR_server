@@ -66,7 +66,7 @@ namespace chat_server.Controllers
 
             List<Roster> demo = new List<Roster>();
 
-            if (roster.Follower.Length > 20)
+            if (roster.Follower.Count > 20)
             {
                 demo = _rosterService.GetSuggestionRoster(roster.Follower);
 
@@ -99,7 +99,7 @@ namespace chat_server.Controllers
                 return BadRequest(exitstingRoster);
             }
 
-            roster.Follower = new string[] { };
+            roster.Follower = new List<Follower>();
             roster.Blocked = new string[] { };
 
             roster.LastOnline = DateTime.Now;
@@ -231,7 +231,7 @@ namespace chat_server.Controllers
             return NoContent();
         }
 
-        // update Folloer list
+        // update Follower list
         [HttpPut("follower/{userId}")]
         public ActionResult AddFollower(string userId, [FromBody] FollowerModel followerModel)
         {
@@ -248,17 +248,12 @@ namespace chat_server.Controllers
                 return NotFound($"Roster with Id = {userId} not found");
             }
             else {
-                int newLength = existingRoster.Follower.Length + 1;
-                result = new string[newLength];
-
-                for(int i = 0; i < existingRoster.Follower.Length; i++) {
-                    result[i] = existingRoster.Follower[i];
-                }
-
-                result[newLength - 1] = followerModel.FollowerId;
+                existingRoster.Follower.Add(new Follower
+                {
+                    UserId = followerModel.FollowerId,
+                    IsFriend = followerModel.FollowBack
+                });
             }
-
-            existingRoster.Follower = result;
 
             _rosterService.UpdateFollower(userId, existingRoster);
 
@@ -273,18 +268,12 @@ namespace chat_server.Controllers
                 }
                 else
                 {
-                    int newLength = existingRoster.Follower.Length + 1;
-                    result = new string[newLength];
-
-                    for (int i = 0; i < existingRoster.Follower.Length; i++)
+                    existingRoster.Follower.Add(new Follower
                     {
-                        result[i] = existingRoster.Follower[i];
-                    }
-
-                    result[newLength - 1] = userId;
+                        UserId = followerModel.FollowerId,
+                        IsFriend = followerModel.FollowBack
+                    });
                 }
-
-                existingRoster.Follower = result;
 
                 _rosterService.UpdateFollower(followerModel.FollowerId, existingRoster);
             }
@@ -308,14 +297,11 @@ namespace chat_server.Controllers
                 return NotFound($"Roster with Id = {userId} not found");
             }
 
-            if(existingRoster.Follower.Contains(followerModel.FollowerId))
-            {
-                // Create a new array excluding the follower to be removed
-                var updatedFollwer = existingRoster.Follower.Where(id => id != followerModel.FollowerId).ToArray();
-                existingRoster.Follower = updatedFollwer;
+            Follower followerToRemove = existingRoster.Follower.FirstOrDefault(x => x.UserId == followerModel.FollowerId);
 
-                //update the roster
-                _rosterService.UpdateFollower(userId, existingRoster);
+            if(followerToRemove != null)
+            {
+                existingRoster.Follower.Remove(followerToRemove);
             }
 
             return NoContent();
