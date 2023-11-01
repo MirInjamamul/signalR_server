@@ -260,22 +260,27 @@ namespace chat_server.Controllers
 
             if (followerModel.FollowBack)
             {
-                existingRoster = _rosterService.Get(followerModel.FollowerId);
+                // Need to update friendship from partner roster
+                var partnerRoster = _rosterService.Get(followerModel.FollowerId);
 
-                if (existingRoster == null)
+                if (partnerRoster == null)
                 {
                     return NotFound($"Roster with Id = {followerModel.FollowerId} not found");
                 }
                 else
                 {
-                    existingRoster.Follower.Add(new Follower
+
+                    var follower = partnerRoster.Follower.FirstOrDefault(follower => follower.UserId == userId);
+                    partnerRoster.Follower.Remove(follower);
+
+                    partnerRoster.Follower.Add(new Follower
                     {
-                        UserId = followerModel.FollowerId,
+                        UserId = userId,
                         IsFriend = followerModel.FollowBack
                     });
                 }
 
-                _rosterService.UpdateFollower(followerModel.FollowerId, existingRoster);
+                _rosterService.UpdateFollower(followerModel.FollowerId, partnerRoster);
             }
 
             return NoContent();
