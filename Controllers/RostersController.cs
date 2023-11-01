@@ -304,7 +304,7 @@ namespace chat_server.Controllers
 
             Follower followerToRemove = existingRoster.Follower.FirstOrDefault(x => x.UserId == followerModel.FollowerId);
 
-            if(followerToRemove != null)
+            if(followerToRemove != null && !followerToRemove.IsFriend)
             {
                 existingRoster.Follower.Remove(followerToRemove);
             }
