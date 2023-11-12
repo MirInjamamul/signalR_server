@@ -1,4 +1,6 @@
-﻿namespace chat_server.Models
+﻿using static chat_server.Utils.Util;
+
+namespace chat_server.Models
 {
     public class MessageModel
     {
@@ -13,6 +15,15 @@
     {
         public MessageModel Message { get; set; } = new MessageModel();
         public string Url { get; set; } = string.Empty;
+
+    }
+
+    public class StoryReactionModel
+    {
+        public MessageModel Message { get; set; } = new MessageModel();
+        public string StoryLink { get; set; } = string.Empty;
+
+        public StoryType StoryType { get; set; }
 
     }
 }

@@ -1,7 +1,9 @@
-﻿using chat_server.Models;
+﻿using Amazon.Runtime.Internal.Endpoints.StandardLibrary;
+using chat_server.Models;
 using chat_server.Services;
 using Microsoft.AspNetCore.SignalR;
 using MongoDB.Driver.Core.Connections;
+using static chat_server.Utils.Util;
 
 namespace chat_server.Hubs
 {
@@ -215,6 +217,44 @@ namespace chat_server.Hubs
             catch { }
         }
 
+        public async void SendStoryReaction(string toUserId, string message, string storyLink, StoryType storyType)
+        {
+            try
+            {
+                string fromConnectionId = Context.ConnectionId;
+                string senderUserId = _presenceTracker.GetUserId(fromConnectionId);
+
+                string fromUsername = _getUserName(senderUserId);
+
+                List<UserDetail> toUserDetail = _presenceTracker.GetUserDetail(toUserId);
+
+                if (toUserDetail.Count != 0)
+                {
+                    foreach (UserDetail userDetail in toUserDetail)
+                    {
+
+                        StoryReactionModel storyReactionModel = new StoryReactionModel
+                        {
+                            Message = new MessageModel
+                            {
+                                SenderId = senderUserId,
+                                SenderUserName = fromUsername,
+                                To = userDetail.UserId,
+                                Message = message
+                            },
+                            StoryLink = storyLink,
+                            StoryType = storyType
+                        };
+                        
+                        await Clients.Client(userDetail.ConnectionId).SendAsync("ReceiveStoryReaction", storyReactionModel);
+
+                    }
+                }
+
+            }
+            catch { }
+        }
+
         public string _getUserName(string userId) 
         { 
             var userDetails = _rosterService.Get(userId);
@@ -292,12 +332,10 @@ namespace chat_server.Hubs
             }            
         }
 
-
         public void LiveMessageToUser(String connectionId, String message)
         {
             Clients.Client(connectionId).SendAsync("ReceiveLiveMessage", message);
         }
-
 
         public string GetConnectionId()
         {
