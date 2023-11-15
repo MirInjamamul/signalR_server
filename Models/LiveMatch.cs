@@ -7,5 +7,6 @@
         public string Photo { get; set; }
         public string RoomId { get; set; }
         public string Message { get; set; }
+        public bool IsSearchPool { get; set; } = false;
     }
 }
