@@ -76,8 +76,12 @@ namespace chat_server.Controllers
             {
                 demo = _rosterService.Get();
 
+                // Exclude Blocked list from suggestion list
+
+                var blockedList = roster.Blocked;
+
                 // Exclude myself from the List
-                demo = demo.Where(r => r.UserId != userId).ToList();
+                demo = demo.Where(r => r.UserId != userId && (blockedList == null || !blockedList.Contains(r.UserId))).ToList();
 
                 Random random = new Random();
                 List<Roster> randomRoster = demo.OrderBy(x => random.Next()).Take(10).ToList();
