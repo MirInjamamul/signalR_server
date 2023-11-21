@@ -113,6 +113,41 @@ namespace chat_server.Controllers
             return CreatedAtAction(nameof(Get), new { id = roster.Id }, roster);
         }
 
+        /// <summary>
+        ///  Bulk Entry for User Creation
+        /// </summary>
+        /// <param name="roster"></param>
+        /// <returns></returns>
+        [HttpPost("bulk_register")]
+        public ActionResult<IEnumerable<Roster>> BulkUserCreation([FromBody] List<Roster> rosterList)
+        {
+
+            if(rosterList == null || rosterList.Any())
+            {
+                return BadRequest("No rosters provided for Bulk Creation");
+            }
+
+            foreach(var roster in rosterList)
+            {
+
+                roster.Follower = new List<Follower>();
+                roster.Blocked = new string[] { };
+
+                roster.LastOnline = DateTime.Now;
+
+                _rosterService.Create(roster);
+            }
+
+
+            return Ok();
+        }
+
+        [HttpGet("bulk")]
+        public ActionResult<IEnumerable<Roster>> GetBulk()
+        {
+            return Ok();
+        }
+
         [HttpPost("last_online")]
         public ActionResult<List<Roster>> LastOnline([FromBody] UserIdModel userList)
         {
@@ -169,6 +204,8 @@ namespace chat_server.Controllers
             result[newLength - 1] = blocklist.BlockId;
 
             roster.Blocked = result;
+
+            roster.Follower.RemoveAll(follower => follower.UserId == blocklist.BlockId);
 
             _rosterService.UpdateFollower(blocklist.UserId, roster);
 
