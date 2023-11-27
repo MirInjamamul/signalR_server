@@ -9,15 +9,15 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.Configure<RosterStoreDatabaseSettings>(builder.Configuration.GetSection(nameof(RosterStoreDatabaseSettings)));
+builder.Services.Configure<IMessageStoreDatabaseSettings>(builder.Configuration.GetSection(nameof(IMessageStoreDatabaseSettings)));
 
-builder.Services.AddSingleton<IRosterStoreDatabaseSettings>(sp => 
-    sp.GetRequiredService<IOptions<RosterStoreDatabaseSettings>>().Value);
+builder.Services.AddSingleton<IRosterStoreDatabaseSettings>(sp => sp.GetRequiredService<IOptions<RosterStoreDatabaseSettings>>().Value);
+builder.Services.AddSingleton<IMessageStoreDatabaseSettings>(ms => ms.GetRequiredService<IOptions<IMessageStoreDatabaseSettings>>().Value);
 
-builder.Services.AddSingleton<IMongoClient>(s => 
-    new MongoClient(builder.Configuration.GetValue<string>("RosterStoreDatabaseSettings:ConnectionString")));
+builder.Services.AddSingleton<IMongoClient>(s => new MongoClient(builder.Configuration.GetValue<string>("RosterStoreDatabaseSettings:ConnectionString")));
+builder.Services.AddSingleton<IMongoClient>(s => new MongoClient(builder.Configuration.GetValue<string>("MessageStoreDatabaseSettings:ConnectionString")));
 
 builder.Services.AddScoped<IRosterService, RosterService>();
-
 builder.Services.AddScoped<IMessageService, MessageService>();
 
 builder.Services.AddCors();
