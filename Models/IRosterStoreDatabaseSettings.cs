@@ -7,4 +7,12 @@
         string DatabaseName { get; set; }
 
     }
+
+    public interface IMessageStoreDatabaseSettings
+    {
+        string OfflineMessageCollectionName { get; set; }
+        string ConnectionString { get; set; }
+        string DatabaseName { get; set; }
+
+    }
 }

@@ -26,4 +26,10 @@ namespace chat_server.Models
         public StoryType StoryType { get; set; }
 
     }
+
+    public class OfflineMessageModel
+    {
+        public MessageModel Message { get; set; } = new MessageModel();
+        public DateTime TimeStamp { get; set; }
+    }
 }

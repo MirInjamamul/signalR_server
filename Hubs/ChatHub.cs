@@ -12,11 +12,13 @@ namespace chat_server.Hubs
 
         private readonly PresenceTracker _presenceTracker;
         private readonly IRosterService _rosterService;
+        private readonly IMessageService _messageService;
 
-        public ChatHub(PresenceTracker presenceTracker, IRosterService rosterService)
+        public ChatHub(PresenceTracker presenceTracker, IRosterService rosterService, IMessageService messageService)
         {
             _presenceTracker = presenceTracker;
             _rosterService = rosterService;
+            _messageService = messageService;
         }
 
         public override async Task OnConnectedAsync()
@@ -93,6 +95,21 @@ namespace chat_server.Hubs
             var currentUsers = await _presenceTracker.GetOnlineUsers();
             await Clients.Caller.SendAsync("onlineUsers", currentUsers);
 
+            List<OfflineMessageModel> offlineMessages = getOfflineMessages(nickName);
+
+            foreach(var offlineMessage in  offlineMessages)
+            {
+                MessageModel messageModel = new MessageModel { SenderId = offlineMessage.Message.SenderId, SenderUserName = offlineMessage.Message.SenderUserName, To = offlineMessage.Message.To, Message = offlineMessage.Message.Message };
+                await Clients.Caller.SendAsync("ReceiveMessage", messageModel);
+            }
+
+            _messageService.deleteMessage(nickName);
+
+        }
+
+        private List<OfflineMessageModel> getOfflineMessages(string receiverId)
+        {
+           return _messageService.GetOfflineMessageByUserAsync(receiverId);
         }
 
         public async void Connect(string userId)
@@ -147,11 +164,22 @@ namespace chat_server.Hubs
                             }
                             else
                             {
-                                // TODO send push notification
+                                // TODO save in storage
+                                OfflineMessageModel offlineMessageModel = new OfflineMessageModel
+                                {
+                                    Message = new MessageModel
+                                    {
+                                        SenderId = senderUserId,
+                                        SenderUserName = fromUsername,
+                                        To = userDetail.UserId,
+                                        Message = message
+                                    },
+                                    TimeStamp = DateTime.Now,
+                                };
 
+                                _messageService.InsertOne(offlineMessageModel);
                             }
                         }
-                        
                         
                     }
                 }
