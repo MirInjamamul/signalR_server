@@ -18,6 +18,8 @@ builder.Services.AddSingleton<IMongoClient>(s =>
 
 builder.Services.AddScoped<IRosterService, RosterService>();
 
+builder.Services.AddScoped<IMessageService, MessageService>();
+
 builder.Services.AddCors();
 
 builder.Services.AddSingleton<PresenceTracker>();
