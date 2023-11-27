@@ -15,6 +15,7 @@ builder.Services.AddSingleton<IRosterStoreDatabaseSettings>(sp => sp.GetRequired
 builder.Services.AddSingleton<IMessageStoreDatabaseSettings>(ms => ms.GetRequiredService<IOptions<MessageDatabaseSettings>>().Value);
 
 builder.Services.AddSingleton<IMongoClient>(s => new MongoClient(builder.Configuration.GetValue<string>("RosterStoreDatabaseSettings:ConnectionString")));
+builder.Services.AddSingleton<IMongoClient>(s => new MongoClient(builder.Configuration.GetValue<string>("MessageDatabaseSettings:ConnectionString")));
 
 builder.Services.AddScoped<IRosterService, RosterService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
