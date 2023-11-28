@@ -32,4 +32,5 @@ namespace chat_server.Models
         public MessageModel Message { get; set; } = new MessageModel();
         public DateTime TimeStamp { get; set; }
     }
+
 }

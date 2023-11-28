@@ -60,7 +60,10 @@ namespace chat_server.Controllers
 
             foreach (UserDetail userDetail in userDetails)
             {
-                _hubContext.Clients.Client(userDetail.ConnectionId).SendAsync("TerminateStreaming", streamingSeatType);
+                Termination termination = new Termination();
+                termination.seatType = streamingSeatType;
+
+                _hubContext.Clients.Client(userDetail.ConnectionId).SendAsync("TerminateStreaming", termination);
             }
 
 
