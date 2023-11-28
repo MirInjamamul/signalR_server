@@ -146,6 +146,9 @@ namespace chat_server.Hubs
                     foreach (UserDetail userDetail in toUserDetail)
                     {
                         bool []userStatus = _getUserStatus(senderUserId, toUserId);
+
+                        Console.WriteLine($"User Status {userStatus[0]}");
+
                         if (!userStatus[2]) // not blocked
                         {
                             if (userStatus[0]) // receiver is online or not
@@ -164,6 +167,8 @@ namespace chat_server.Hubs
                             }
                             else
                             {
+
+                                Console.WriteLine("inserting offline message");
                                 // TODO save in storage
                                 OfflineMessageModel offlineMessageModel = new OfflineMessageModel
                                 {
