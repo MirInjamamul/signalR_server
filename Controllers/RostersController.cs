@@ -124,7 +124,7 @@ namespace chat_server.Controllers
 
             Console.WriteLine($"Bulk Creation size {rosterList.Count}");
 
-            if(rosterList == null || rosterList.Any())
+            if(rosterList == null || rosterList.Count == 0)
             {
                 return BadRequest("No rosters provided for Bulk Creation");
             }
