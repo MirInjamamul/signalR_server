@@ -122,6 +122,8 @@ namespace chat_server.Controllers
         public ActionResult<IEnumerable<Roster>> BulkUserCreation([FromBody] List<Roster> rosterList)
         {
 
+            Console.WriteLine($"Bulk Creation size {rosterList.Count}");
+
             if(rosterList == null || rosterList.Any())
             {
                 return BadRequest("No rosters provided for Bulk Creation");
