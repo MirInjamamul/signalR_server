@@ -145,7 +145,7 @@ namespace chat_server.Hubs
                 {
                     foreach (UserDetail userDetail in toUserDetail)
                     {
-                        bool []userStatus = _getUserStatus(senderUserId, toUserId);
+                        bool[] userStatus = _getUserStatus(senderUserId, toUserId);
 
                         Console.WriteLine($"User Status {userStatus[0]}");
 
@@ -185,8 +185,27 @@ namespace chat_server.Hubs
                                 _messageService.InsertOne(offlineMessageModel);
                             }
                         }
-                        
+
                     }
+                }
+                else {
+                    Console.WriteLine("No User Detail Found");
+
+                    Console.WriteLine("inserting offline message");
+                    // TODO save in storage
+                    OfflineMessageModel offlineMessageModel = new OfflineMessageModel
+                    {
+                        Message = new MessageModel
+                        {
+                            SenderId = senderUserId,
+                            SenderUserName = fromUsername,
+                            To = toUserId,
+                            Message = message
+                        },
+                        TimeStamp = DateTime.Now,
+                    };
+
+                    _messageService.InsertOne(offlineMessageModel);
                 }
 
             }
