@@ -95,7 +95,10 @@ namespace chat_server.Hubs
             var currentUsers = await _presenceTracker.GetOnlineUsers();
             await Clients.Caller.SendAsync("onlineUsers", currentUsers);
 
+
             List<OfflineMessageModel> offlineMessages = getOfflineMessages(nickName);
+
+            Console.WriteLine($"offline message size {offlineMessages.Count}");
 
             foreach(var offlineMessage in  offlineMessages)
             {
