@@ -74,32 +74,10 @@ namespace chat_server.Hubs
             var nickName = username;
             string connectionId = Context.ConnectionId;
 
- /*           var nickAvailable = await _presenceTracker.NickNameAvailable(nickName);
-            if (!nickAvailable) 
-            {
-                nickName = $"{username}_{Guid.NewGuid().ToString("N").Substring(0, 6)}";
-            }
- */
-            //await _presenceTracker.ConnectionClosed(connectionId);
-
             var result = await _presenceTracker.ConnectionOpened(nickName);
 
             // Remove when user went offline
             await _presenceTracker.SetupNickConnection(connectionId, nickName);
-
-            List<OfflineMessageModel> offlineMessages = getOfflineMessages(nickName);
-
-            Console.WriteLine($"User Joined {nickName}");
-
-            Console.WriteLine($"offline message size {offlineMessages.Count}");
-
-            foreach (var offlineMessage in offlineMessages)
-            {
-                MessageModel messageModel = new MessageModel { SenderId = offlineMessage.Message.SenderId, SenderUserName = offlineMessage.Message.SenderUserName, To = offlineMessage.Message.To, Message = offlineMessage.Message.Message };
-                await Clients.Caller.SendAsync("ReceiveMessage", messageModel);
-            }
-
-            _messageService.deleteMessage(nickName);
 
             if (result.UserJoined)
             {
@@ -126,6 +104,20 @@ namespace chat_server.Hubs
             UserDetail userDetail = _presenceTracker.Login(connectionId, userId);
 
             _updatePresence(userId, true);
+
+            List<OfflineMessageModel> offlineMessages = getOfflineMessages(userId);
+
+            Console.WriteLine($"User Joined {userId}");
+
+            Console.WriteLine($"offline message size {offlineMessages.Count}");
+
+            foreach (var offlineMessage in offlineMessages)
+            {
+                MessageModel messageModel = new MessageModel { SenderId = offlineMessage.Message.SenderId, SenderUserName = offlineMessage.Message.SenderUserName, To = offlineMessage.Message.To, Message = offlineMessage.Message.Message };
+                await Clients.Caller.SendAsync("ReceiveMessage", messageModel);
+            }
+
+            _messageService.deleteMessage(userId);
 
             await Clients.All.SendAsync("UserLogged", userDetail);
         }
