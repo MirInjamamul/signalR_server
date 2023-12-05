@@ -1,6 +1,6 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-using System.Runtime.Serialization;
+using MongoDB.Bson.Serialization.IdGenerators;
 using static chat_server.Utils.Util;
 
 namespace chat_server.Models
@@ -34,7 +34,7 @@ namespace chat_server.Models
     public class OfflineMessageModel
     {
         [BsonIgnoreIfDefault]
-        [BsonId(IdGenerator = typeof(ObjectIDGenerator))]
+        [BsonId(IdGenerator = typeof(ObjectIdGenerator))]
         public ObjectId _id {  get; set; }
         public MessageModel Message { get; set; } = new MessageModel();
         public DateTime TimeStamp { get; set; }
