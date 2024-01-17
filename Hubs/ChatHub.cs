@@ -306,6 +306,58 @@ namespace chat_server.Hubs
             catch { }
         }
 
+        // Send offer SDP
+        public async void MakeCall(string toUserId, string offerSDP)
+        {
+            try
+            {
+                string fromConnectionId = Context.ConnectionId;
+                string senderUserId = _presenceTracker.GetUserId(fromConnectionId);
+
+                string fromUsername = _getUserName(senderUserId);
+
+                List<UserDetail> toUserDetail = _presenceTracker.GetUserDetail(toUserId);
+
+                if (toUserDetail.Count != 0)
+                {
+                    foreach (UserDetail userDetail in toUserDetail)
+                    {
+                        bool[] userStatus = _getUserStatus(senderUserId, toUserId);
+
+                        Console.WriteLine($"User Status {userStatus[0]}");
+
+                        if (!userStatus[2]) // not blocked
+                        {
+                            if (userStatus[0]) // receiver is online or not
+                            {
+                                if (userStatus[1]) // request message or not
+                                {
+                                    CallModel callModel = new CallModel { SenderId = senderUserId, SenderUserName = fromUsername, To = userDetail.UserId, Sdp = offerSDP };
+                                    await Clients.Client(userDetail.ConnectionId).SendAsync("ReceiveCall", callModel);
+                                }
+                                else
+                                {
+                                    // Send Missed Call
+                                }
+
+                            }
+                            else
+                            {
+                                // Send Missed Call
+                            }
+                        }
+
+                    }
+                }
+                else
+                {
+                    // Send Missed Call
+                }
+
+            }
+            catch { }
+        }
+
         public string _getUserName(string userId) 
         { 
             var userDetails = _rosterService.Get(userId);

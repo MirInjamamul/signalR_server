@@ -13,6 +13,14 @@ namespace chat_server.Models
         public string Message { get; set; } = string.Empty;
 
     }
+    public class CallModel
+    {
+        public string SenderId { get; set; } = string.Empty;
+        public string SenderUserName { get; set; } = string.Empty;
+        public string To { get; set; } = string.Empty;
+        public string Sdp { get; set; } = string.Empty;
+
+    }
 
     public class FileMessageModel
     {
