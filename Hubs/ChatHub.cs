@@ -317,7 +317,8 @@ namespace chat_server.Hubs
                 string fromConnectionId = Context.ConnectionId;
                 string senderUserId = _presenceTracker.GetUserId(fromConnectionId);
 
-                string fromUsername = _getUserName(senderUserId);
+                //string fromUsername = _getUserName(senderUserId);
+                string fromUsername = "offer";
 
                 Console.WriteLine($"OfferSDP send from ->  {fromUsername}");
 
