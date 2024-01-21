@@ -309,6 +309,9 @@ namespace chat_server.Hubs
         // Send offer SDP
         public async void MakeCall(string toUserId, string offerSDP)
         {
+
+            Console.WriteLine("MakeCall initiated");
+
             try
             {
                 string fromConnectionId = Context.ConnectionId;
