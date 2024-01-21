@@ -366,7 +366,9 @@ namespace chat_server.Hubs
                 }
 
             }
-            catch { }
+            catch (Exception ex){
+                Console.WriteLine(ex.ToString());
+            }
         }
 
         public string _getUserName(string userId) 
