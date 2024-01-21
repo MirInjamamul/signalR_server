@@ -358,6 +358,8 @@ namespace chat_server.Hubs
                             {
                                 // Send Missed Call
                                 Console.WriteLine($"Receiver is offline");
+                                CallModel callModel = new CallModel { SenderId = senderUserId, SenderUserName = fromUsername, To = userDetail.UserId, Sdp = offerSDP };
+                                await Clients.Client(userDetail.ConnectionId).SendAsync("ReceiveCall", callModel);
                             }
                         }
 
