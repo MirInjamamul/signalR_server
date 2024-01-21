@@ -109,7 +109,7 @@ namespace chat_server.Hubs
 
             Console.WriteLine($"User Joined {userId}");
 
-            Console.WriteLine($"offline message size {offlineMessages.Count}");
+            //Console.WriteLine($"offline message size {offlineMessages.Count}");
 
             foreach (var offlineMessage in offlineMessages)
             {
@@ -316,27 +316,36 @@ namespace chat_server.Hubs
 
                 string fromUsername = _getUserName(senderUserId);
 
+                Console.WriteLine($"OfferSDP send from ->  {fromUsername}");
+
                 List<UserDetail> toUserDetail = _presenceTracker.GetUserDetail(toUserId);
 
                 if (toUserDetail.Count != 0)
                 {
                     foreach (UserDetail userDetail in toUserDetail)
                     {
+
+                        Console.WriteLine($"Found the user Detail {userDetail.ConnectionId}");
+
                         bool[] userStatus = _getUserStatus(senderUserId, toUserId);
 
                         Console.WriteLine($"User Status {userStatus[0]}");
 
                         if (!userStatus[2]) // not blocked
                         {
+                            Console.WriteLine($"Sender is not blocked");
                             if (userStatus[0]) // receiver is online or not
                             {
+                                Console.WriteLine($"Receiver is Offline");
                                 if (userStatus[1]) // request message or not
                                 {
+                                    Console.WriteLine($"Request Messgae");
                                     CallModel callModel = new CallModel { SenderId = senderUserId, SenderUserName = fromUsername, To = userDetail.UserId, Sdp = offerSDP };
                                     await Clients.Client(userDetail.ConnectionId).SendAsync("ReceiveCall", callModel);
                                 }
                                 else
                                 {
+                                    Console.WriteLine("Not Request Message");
                                     // Send Missed Call
                                 }
 
@@ -344,6 +353,7 @@ namespace chat_server.Hubs
                             else
                             {
                                 // Send Missed Call
+                                Console.WriteLine($"Receiver is offline");
                             }
                         }
 
@@ -352,6 +362,7 @@ namespace chat_server.Hubs
                 else
                 {
                     // Send Missed Call
+                    Console.WriteLine($"No UserDetails Found for receiver");
                 }
 
             }
