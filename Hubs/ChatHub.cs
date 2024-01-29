@@ -109,7 +109,7 @@ namespace chat_server.Hubs
 
             Console.WriteLine($"User Joined {userId}");
 
-            //Console.WriteLine($"offline message size {offlineMessages.Count}");
+            Console.WriteLine($"offline message size {offlineMessages.Count}");
 
             foreach (var offlineMessage in offlineMessages)
             {
@@ -304,77 +304,6 @@ namespace chat_server.Hubs
 
             }
             catch { }
-        }
-
-        // Send offer SDP
-        public async void MakeCall(string toUserId, string offerSDP)
-        {
-
-            Console.WriteLine("MakeCall initiated");
-
-            try
-            {
-                string fromConnectionId = Context.ConnectionId;
-                string senderUserId = _presenceTracker.GetUserId(fromConnectionId);
-
-                //string fromUsername = _getUserName(senderUserId);
-                string fromUsername = "offer";
-
-                Console.WriteLine($"OfferSDP send from ->  {fromUsername}");
-
-                List<UserDetail> toUserDetail = _presenceTracker.GetUserDetail(toUserId);
-
-                if (toUserDetail.Count != 0)
-                {
-                    foreach (UserDetail userDetail in toUserDetail)
-                    {
-
-                        Console.WriteLine($"Found the user Detail {userDetail.ConnectionId}");
-
-                        bool[] userStatus = _getUserStatus(senderUserId, toUserId);
-
-                        Console.WriteLine($"User Status {userStatus[0]}");
-
-                        if (!userStatus[2]) // not blocked
-                        {
-                            Console.WriteLine($"Sender is not blocked");
-                            if (userStatus[0]) // receiver is online or not
-                            {
-                                Console.WriteLine($"Receiver is Offline");
-                                if (userStatus[1]) // request message or not
-                                {
-                                    Console.WriteLine($"Request Messgae");
-                                    CallModel callModel = new CallModel { SenderId = senderUserId, SenderUserName = fromUsername, To = userDetail.UserId, Sdp = offerSDP };
-                                    await Clients.Client(userDetail.ConnectionId).SendAsync("ReceiveCall", callModel);
-                                }
-                                else
-                                {
-                                    Console.WriteLine("Not Request Message");
-                                    // Send Missed Call
-                                }
-
-                            }
-                            else
-                            {
-                                // Send Missed Call
-                                Console.WriteLine($"Receiver is offline");
-                                CallModel callModel = new CallModel { SenderId = senderUserId, SenderUserName = fromUsername, To = userDetail.UserId, Sdp = offerSDP };
-                                await Clients.Client(userDetail.ConnectionId).SendAsync("ReceiveCall", callModel);
-                            }
-                        }
-
-                    }
-                }
-                else
-                {
-                    // Send Missed Call
-                    Console.WriteLine($"No UserDetails Found for receiver");
-                }
-
-            }
-            catch (Exception ex){
-                Console.WriteLine(ex.ToString());
-            }
         }
 
         public string _getUserName(string userId) 
