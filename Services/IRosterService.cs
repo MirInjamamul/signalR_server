@@ -13,5 +13,6 @@ namespace chat_server.Services
         void Update(string id, Roster roster);
         void UpdateFollower(string userId, Roster roster);
         void Remove(string id);
+        void RemoveAll();
     }
 }

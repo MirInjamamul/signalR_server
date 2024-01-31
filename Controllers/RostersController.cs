@@ -436,5 +436,12 @@ namespace chat_server.Controllers
 
             return Ok($"Roster with id = {userId} is deleted");
         }
+
+        [HttpDelete("deleteAll")]
+        public ActionResult DeleteAll() {
+            _rosterService.RemoveAll();
+
+            return Ok("All data in the roster is deleted");
+        }
     }
 }

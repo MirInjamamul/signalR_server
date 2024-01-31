@@ -57,6 +57,11 @@ namespace chat_server.Services
             _rosters.DeleteOne(roster => roster.UserId == id);
         }
 
+        public void RemoveAll()
+        {
+            _rosters.DeleteMany(roster => true);
+        }
+
         public void Update(string id, Roster roster)
         {
             _rosters.ReplaceOne(roster => roster.UserId == id, roster);
