@@ -11,10 +11,12 @@ namespace chat_server.Controllers
     public class HomeController : ControllerBase
     {
         private readonly IHubContext<ChatHub> _hubContext;
+        private readonly PresenceTracker _presenceTracker;
 
-        public HomeController(IHubContext<ChatHub> hubContext)
+        public HomeController(IHubContext<ChatHub> hubContext, PresenceTracker presenceTracker)
         {
             _hubContext = hubContext;
+            _presenceTracker = presenceTracker;
         }
 
         [HttpPost]
@@ -35,6 +37,18 @@ namespace chat_server.Controllers
         {
             _hubContext.Clients.All.SendAsync("ReceiveMessage", message);
 
+            return Ok("Done");
+        }
+
+        [HttpPost]
+        [Route("PushOfficialMessage")]
+        public IActionResult PushOfficialMessage(string receiverId, string message, string mediaUrl, int messageType) {
+            List<UserDetail> userDetails = _presenceTracker.GetUserDetail(receiverId);
+
+            foreach (UserDetail userDetail in userDetails) { 
+                _hubContext.Clients.Client(userDetail.ConnectionId).SendAsync("ReceiveOfficialMessage",message, mediaUrl, messageType);
+            }
+            
             return Ok("Done");
         }
     }
