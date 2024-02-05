@@ -370,7 +370,7 @@ namespace chat_server.Hubs
 
             List<UserDetail> reveiverUserDetail = _presenceTracker.GetUserDetail(receiverUserId);
 
-            LiveMatch liveMatch = new LiveMatch();
+            LiveCall liveMatch = new LiveCall();
             liveMatch.SenderId = senderId;
             liveMatch.RoomId = roomId;
             liveMatch.Name = name;
@@ -381,6 +381,25 @@ namespace chat_server.Hubs
             {
                 Clients.Client(item.ConnectionId).SendAsync("ReceiveLiveInvitation", liveMatch);
             }            
+        }
+
+        public void SendOffer(String receiverUserId, String senderId, String roomId, String name, String photo, bool isVideo, String message)
+        {
+
+            List<UserDetail> reveiverUserDetail = _presenceTracker.GetUserDetail(receiverUserId);
+
+            LiveCall liveCall = new LiveCall();
+            liveCall.SenderId = senderId;
+            liveCall.RoomId = roomId;
+            liveCall.Name = name;
+            liveCall.Photo = photo;
+            liveCall.Message = message;
+            liveCall.IsVideo = isVideo;
+
+            foreach (var item in reveiverUserDetail)
+            {
+                Clients.Client(item.ConnectionId).SendAsync("ReceiveLiveInvitation", liveCall);
+            }
         }
 
         public void LiveMessageToUser(String connectionId, String message)

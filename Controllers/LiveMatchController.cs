@@ -23,7 +23,7 @@ namespace chat_server.Controllers
 
         [HttpPost]
         [Route("PushInvitation")]
-        public IActionResult PushInvitation(String receiverId, LiveMatch invitation)
+        public IActionResult PushInvitation(String receiverId, LiveCall invitation)
         {
 
             List<UserDetail> userDetails = _presenceTracker.GetUserDetail(receiverId);
