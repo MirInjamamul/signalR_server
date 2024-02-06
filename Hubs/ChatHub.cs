@@ -402,6 +402,17 @@ namespace chat_server.Hubs
             }
         }
 
+        public void SendReject(String receiverUserId, String roomId, String message)
+        {
+
+            List<UserDetail> reveiverUserDetail = _presenceTracker.GetUserDetail(receiverUserId);
+
+            foreach (var item in reveiverUserDetail)
+            {
+                Clients.Client(item.ConnectionId).SendAsync("ReceiveCallReject", roomId);
+            }
+        }
+
         public void LiveMessageToUser(String connectionId, String message)
         {
             Clients.Client(connectionId).SendAsync("ReceiveLiveMessage", message);
