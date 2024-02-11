@@ -4,6 +4,7 @@ using chat_server.Services;
 using Microsoft.AspNetCore.SignalR;
 using MongoDB.Driver.Core.Connections;
 using static chat_server.Utils.Util;
+using static System.Net.WebRequestMethods;
 
 namespace chat_server.Hubs
 {
@@ -324,6 +325,47 @@ namespace chat_server.Hubs
 
                 _rosterService.Update(userId, roster);
             }
+
+            await PostOnlineStatus(userId, onlineStatus);
+
+
+
+
+        }
+
+        static async Task PostOnlineStatus(string userId, bool onlineStatus) 
+        {
+            string apiURL = "http://185.100.232.17:3011/api/online-status";
+
+            int status = (onlineStatus) ? 1 : 0;
+
+            // payload
+            string jsonPayload = $@"{{
+                ""id"": ""{userId}"",
+                ""online"": {status}
+            }}";
+
+            using (HttpClient client = new HttpClient())
+            { 
+                StringContent content = new StringContent(jsonPayload, System.Text.Encoding.UTF8, "application/json");
+
+                try
+                {
+                    HttpResponseMessage responseMessage = await client.PostAsync(apiURL, content);
+                    if (responseMessage.IsSuccessStatusCode)
+                    {
+
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Error {responseMessage.StatusCode} - {responseMessage.ReasonPhrase}");
+                    }
+                }
+                catch (Exception e) {
+                    Console.WriteLine($"Exception: {e.Message}");
+                }
+            }
+
         }
 
         public bool[] _getUserStatus(string senderUserId, string receiverUserId)
