@@ -307,6 +307,40 @@ namespace chat_server.Hubs
             catch { }
         }
 
+        public async void SendSpeedDatingMessage(string toUserId, string message)
+        {
+            try
+            {
+                string fromConnectionId = Context.ConnectionId;
+                string senderUserId = _presenceTracker.GetUserId(fromConnectionId);
+
+                string fromUsername = _getUserName(senderUserId);
+
+                List<UserDetail> toUserDetail = _presenceTracker.GetUserDetail(toUserId);
+
+                if (toUserDetail.Count != 0)
+                {
+                    foreach (UserDetail userDetail in toUserDetail)
+                    {
+                        bool[] userStatus = _getUserStatus(senderUserId, toUserId);
+
+                        MessageModel messageModel = new MessageModel { SenderId = senderUserId, SenderUserName = fromUsername, To = userDetail.UserId, Message = message };
+                        await Clients.Client(userDetail.ConnectionId).SendAsync("ReceiveSpeedDatingMessage", messageModel);
+                    }
+                }
+                else
+                {
+                    
+                    // TODO Need to acknoledge that user is diconnected from network
+                    Console.WriteLine($"Receiver {toUserId} is offline in speed dating");
+                }
+
+            }
+            catch(Exception e) { 
+                Console.WriteLine("Speed Dating Crash : "+ e.ToString());
+            }
+        }
+
         public string _getUserName(string userId) 
         { 
             var userDetails = _rosterService.Get(userId);
