@@ -341,7 +341,7 @@ namespace chat_server.Hubs
             }
         }
 
-        public async void LeftSpeedDatingMessage(string toUserId)
+        public async void LeftSpeedDatingMessage(string toUserId, string photo)
         {
             try
             {
@@ -358,7 +358,7 @@ namespace chat_server.Hubs
                     {
                         bool[] userStatus = _getUserStatus(senderUserId, toUserId);
 
-                        MessageModel messageModel = new MessageModel { SenderId = senderUserId, SenderUserName = fromUsername, To = userDetail.UserId, Message = "" };
+                        MessageModel messageModel = new MessageModel { SenderId = senderUserId, SenderUserName = fromUsername, To = userDetail.UserId, Message = photo };
                         await Clients.Client(userDetail.ConnectionId).SendAsync("EndSpeedDating", messageModel);
                     }
                 }
