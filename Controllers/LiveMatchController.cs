@@ -38,6 +38,22 @@ namespace chat_server.Controllers
         }
 
         [HttpPost]
+        [Route("SpeedDating")]
+        public IActionResult SpeedDating(String receiverId, SpeedDating speedDating)
+        {
+
+            List<UserDetail> userDetails = _presenceTracker.GetUserDetail(receiverId);
+
+            foreach (UserDetail userDetail in userDetails)
+            {
+                _hubContext.Clients.Client(userDetail.ConnectionId).SendAsync("MatchSpeedDating", speedDating);
+            }
+
+
+            return Ok("Done");
+        }
+
+        [HttpPost]
         [Route("StreamTermination")]
         public IActionResult TerminateStream(String receiverId, int seatType)
         {
