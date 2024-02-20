@@ -23,4 +23,10 @@ namespace chat_server.Models
     {
         public SeatType seatType { get; set; } = SeatType.none;
     }
+
+    public class Reject
+    {
+        public string roomId { get; set; }
+        public string message { get; set; }
+    }
 }

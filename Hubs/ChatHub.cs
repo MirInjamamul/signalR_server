@@ -518,10 +518,14 @@ namespace chat_server.Hubs
         {
 
             List<UserDetail> reveiverUserDetail = _presenceTracker.GetUserDetail(receiverUserId);
+            Reject reject = new Reject();
+            reject.roomId = roomId;
+            reject.message = message;
 
             foreach (var item in reveiverUserDetail)
             {
-                Clients.Client(item.ConnectionId).SendAsync("ReceiveCallReject", roomId);
+
+                Clients.Client(item.ConnectionId).SendAsync("ReceiveCallReject", reject);
             }
         }
 
