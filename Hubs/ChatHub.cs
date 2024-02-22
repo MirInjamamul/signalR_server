@@ -114,7 +114,7 @@ namespace chat_server.Hubs
 
             foreach (var offlineMessage in offlineMessages)
             {
-                MessageModel messageModel = new MessageModel { SenderId = offlineMessage.Message.SenderId, SenderUserName = offlineMessage.Message.SenderUserName, To = offlineMessage.Message.To, Message = offlineMessage.Message.Message };
+                MessageModel messageModel = new MessageModel { SenderId = offlineMessage.Message.SenderId, SenderUserName = offlineMessage.Message.SenderUserName, SenderUserPhoto = offlineMessage.Message.SenderUserPhoto, To = offlineMessage.Message.To, Message = offlineMessage.Message.Message };
                 await Clients.Caller.SendAsync("ReceiveMessage", messageModel);
             }
 
@@ -137,7 +137,7 @@ namespace chat_server.Hubs
                 string fromConnectionId = Context.ConnectionId;
                 string senderUserId = _presenceTracker.GetUserId(fromConnectionId);
 
-                string fromUsername = _getUserName(senderUserId);
+                Roster fromUser = _getUserName(senderUserId);
 
                 List<UserDetail> toUserDetail = _presenceTracker.GetUserDetail(toUserId);
 
@@ -155,12 +155,12 @@ namespace chat_server.Hubs
                             {
                                 if (userStatus[1]) // request message or not
                                 {
-                                    MessageModel messageModel = new MessageModel { SenderId = senderUserId, SenderUserName = fromUsername, To = userDetail.UserId, Message = message };
+                                    MessageModel messageModel = new MessageModel { SenderId = senderUserId, SenderUserName = fromUser.NickName, SenderUserPhoto=fromUser.Photo, To = userDetail.UserId, Message = message };
                                     await Clients.Client(userDetail.ConnectionId).SendAsync("ReceiveMessage", messageModel);
                                 }
                                 else
                                 {
-                                    MessageModel messageModel = new MessageModel { SenderId = senderUserId, SenderUserName = fromUsername, To = userDetail.UserId, Message = message };
+                                    MessageModel messageModel = new MessageModel { SenderId = senderUserId, SenderUserName = fromUser.NickName, SenderUserPhoto = fromUser.Photo, To = userDetail.UserId, Message = message };
                                     await Clients.Client(userDetail.ConnectionId).SendAsync("ReceiveRequestMessage", messageModel);
                                 }
 
@@ -175,7 +175,8 @@ namespace chat_server.Hubs
                                     Message = new MessageModel
                                     {
                                         SenderId = senderUserId,
-                                        SenderUserName = fromUsername,
+                                        SenderUserName = fromUser.NickName,
+                                        SenderUserPhoto = fromUser.Photo,
                                         To = userDetail.UserId,
                                         Message = message
                                     },
@@ -198,7 +199,8 @@ namespace chat_server.Hubs
                         Message = new MessageModel
                         {
                             SenderId = senderUserId,
-                            SenderUserName = fromUsername,
+                            SenderUserName = fromUser.NickName,
+                            SenderUserPhoto= fromUser.Photo,
                             To = toUserId,
                             Message = message
                         },
@@ -219,7 +221,7 @@ namespace chat_server.Hubs
                 string fromConnectionId = Context.ConnectionId;
                 string senderUserId = _presenceTracker.GetUserId(fromConnectionId);
 
-                string fromUsername = _getUserName(senderUserId);
+                Roster fromUser = _getUserName(senderUserId);
 
                 List<UserDetail> toUserDetail = _presenceTracker.GetUserDetail(toUserId);
 
@@ -237,7 +239,8 @@ namespace chat_server.Hubs
                                     Message = new MessageModel
                                     {
                                         SenderId = senderUserId,
-                                        SenderUserName = fromUsername,
+                                        SenderUserName = fromUser.NickName,
+                                        SenderUserPhoto = fromUser.Photo,
                                         To = userDetail.UserId,
                                         Message = title
                                     },
@@ -276,7 +279,7 @@ namespace chat_server.Hubs
                 string fromConnectionId = Context.ConnectionId;
                 string senderUserId = _presenceTracker.GetUserId(fromConnectionId);
 
-                string fromUsername = _getUserName(senderUserId);
+                Roster fromUser = _getUserName(senderUserId);
 
                 List<UserDetail> toUserDetail = _presenceTracker.GetUserDetail(toUserId);
 
@@ -290,7 +293,8 @@ namespace chat_server.Hubs
                             Message = new MessageModel
                             {
                                 SenderId = senderUserId,
-                                SenderUserName = fromUsername,
+                                SenderUserName = fromUser.NickName,
+                                SenderUserPhoto = fromUser.Photo,
                                 To = userDetail.UserId,
                                 Message = message
                             },
@@ -314,7 +318,7 @@ namespace chat_server.Hubs
                 string fromConnectionId = Context.ConnectionId;
                 string senderUserId = _presenceTracker.GetUserId(fromConnectionId);
 
-                string fromUsername = _getUserName(senderUserId);
+                Roster fromUser = _getUserName(senderUserId);
 
                 List<UserDetail> toUserDetail = _presenceTracker.GetUserDetail(toUserId);
 
@@ -324,7 +328,7 @@ namespace chat_server.Hubs
                     {
                         bool[] userStatus = _getUserStatus(senderUserId, toUserId);
 
-                        MessageModel messageModel = new MessageModel { SenderId = senderUserId, SenderUserName = fromUsername, To = userDetail.UserId, Message = message };
+                        MessageModel messageModel = new MessageModel { SenderId = senderUserId, SenderUserName = fromUser.NickName,SenderUserPhoto= fromUser.Photo, To = userDetail.UserId, Message = message };
                         await Clients.Client(userDetail.ConnectionId).SendAsync("ReceiveSpeedDatingMessage", messageModel);
                     }
                 }
@@ -348,7 +352,7 @@ namespace chat_server.Hubs
                 string fromConnectionId = Context.ConnectionId;
                 string senderUserId = _presenceTracker.GetUserId(fromConnectionId);
 
-                string fromUsername = _getUserName(senderUserId);
+                Roster fromUser = _getUserName(senderUserId);
 
                 List<UserDetail> toUserDetail = _presenceTracker.GetUserDetail(toUserId);
 
@@ -358,7 +362,7 @@ namespace chat_server.Hubs
                     {
                         bool[] userStatus = _getUserStatus(senderUserId, toUserId);
 
-                        MessageModel messageModel = new MessageModel { SenderId = senderUserId, SenderUserName = fromUsername, To = userDetail.UserId, Message = photo };
+                        MessageModel messageModel = new MessageModel { SenderId = senderUserId, SenderUserName = fromUser.NickName, SenderUserPhoto= fromUser.Photo, To = userDetail.UserId, Message = photo };
                         await Clients.Client(userDetail.ConnectionId).SendAsync("EndSpeedDating", messageModel);
                     }
                 }
@@ -377,11 +381,9 @@ namespace chat_server.Hubs
         }
 
 
-        public string _getUserName(string userId) 
+        public Roster _getUserName(string userId) 
         { 
-            var userDetails = _rosterService.Get(userId);
-
-            return userDetails.NickName;
+            return _rosterService.Get(userId);
         }
 
         public async void _updatePresence(string userId, bool onlineStatus)
