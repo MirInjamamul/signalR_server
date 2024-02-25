@@ -3,6 +3,8 @@ using chat_server.Models;
 using chat_server.Services;
 using Microsoft.AspNetCore.SignalR;
 using MongoDB.Driver.Core.Connections;
+using MongoDB.Driver.Core.Servers;
+using System.Xml.Linq;
 using static chat_server.Utils.Util;
 using static System.Net.WebRequestMethods;
 
@@ -516,18 +518,22 @@ namespace chat_server.Hubs
             }
         }
 
-        public void SendReject(String receiverUserId, String roomId, String message)
+        public void SendReject(String receiverUserId, String senderId, String roomId, String name, String photo, bool isVideo, String message)
         {
 
             List<UserDetail> reveiverUserDetail = _presenceTracker.GetUserDetail(receiverUserId);
-            Reject reject = new Reject();
-            reject.roomId = roomId;
-            reject.message = message;
+
+            LiveCall rejectCall = new LiveCall();
+            rejectCall.SenderId = senderId;
+            rejectCall.RoomId = roomId;
+            rejectCall.Name = name;
+            rejectCall.Photo = photo;
+            rejectCall.Message = message;
+            rejectCall.IsVideo = isVideo;
 
             foreach (var item in reveiverUserDetail)
             {
-
-                Clients.Client(item.ConnectionId).SendAsync("ReceiveCallReject", reject);
+                Clients.Client(item.ConnectionId).SendAsync("ReceiveCallReject", rejectCall);
             }
         }
 
