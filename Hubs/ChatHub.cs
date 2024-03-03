@@ -146,17 +146,21 @@ namespace chat_server.Hubs
                     {
                         bool[] userStatus = _getUserStatus(senderUserId, toUserId);
 
-
+                        Console.WriteLine("Sender is Blocked , status 11");
                         if (!userStatus[2]) // Sender is not blocked
                         {
+                            Console.WriteLine("Sender is Blocked , status 12");
                             if (userStatus[0]) // is online
                             {
+                                Console.WriteLine("Sender is Blocked , status 13");
 
                                 MessageModel messageModel = new MessageModel { SenderId = senderUserId, SenderUserName = fromUser.NickName, SenderUserPhoto = fromUser.Photo, To = userDetail.UserId, Message = message };
                                 await Clients.Client(userDetail.ConnectionId).SendAsync("ReceiveMessage", messageModel);
                             }
                             else // Receiver Offline
                             {
+
+                                Console.WriteLine("Sender is Blocked , status 14");
 
                                 Console.WriteLine("inserting offline message");
                                 // TODO save in storage
@@ -435,11 +439,18 @@ namespace chat_server.Hubs
 
         public bool[] _getUserStatus(string senderUserId, string receiverUserId)
         {
+
+            Console.WriteLine("Sender is Blocked , status 1");
+
             bool []data = new bool[3];
             var receiverRoster = _rosterService.Get(receiverUserId);
 
+            Console.WriteLine("Sender is Blocked , status 2");
+
             if (receiverRoster != null)
             {
+
+                Console.WriteLine("Sender is Blocked , status 3");
                 data[0] = receiverRoster.IsActive;
                 data[1] = true;
 
@@ -462,6 +473,8 @@ namespace chat_server.Hubs
                 data[2] = false;
                 
             }
+
+            Console.WriteLine("Sender is Blocked , status 4");
 
             return data;
         }
