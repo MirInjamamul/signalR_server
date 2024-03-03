@@ -139,46 +139,18 @@ namespace chat_server.Hubs
                 Roster fromUser = _getUserName(senderUserId);
 
                 List<UserDetail> toUserDetail = _presenceTracker.GetUserDetail(toUserId);
+                bool[] userStatus = _getUserStatus(senderUserId, toUserId);
+
 
                 if (toUserDetail.Count != 0)
                 {
+                    // User is online
                     foreach (UserDetail userDetail in toUserDetail)
                     {
-                        bool[] userStatus = _getUserStatus(senderUserId, toUserId);
-
-                        Console.WriteLine("Sender is Blocked , status 11");
                         if (!userStatus[2]) // Sender is not blocked
                         {
-                            Console.WriteLine("Sender is Blocked , status 12");
-                            if (userStatus[0]) // is online
-                            {
-                                Console.WriteLine("Sender is Blocked , status 13");
-
-                                MessageModel messageModel = new MessageModel { SenderId = senderUserId, SenderUserName = fromUser.NickName, SenderUserPhoto = fromUser.Photo, To = userDetail.UserId, Message = message };
-                                await Clients.Client(userDetail.ConnectionId).SendAsync("ReceiveMessage", messageModel);
-                            }
-                            else // Receiver Offline
-                            {
-
-                                Console.WriteLine("Sender is Blocked , status 14");
-
-                                Console.WriteLine("inserting offline message");
-                                // TODO save in storage
-                                OfflineMessageModel offlineMessageModel = new OfflineMessageModel
-                                {
-                                    Message = new MessageModel
-                                    {
-                                        SenderId = senderUserId,
-                                        SenderUserName = fromUser.NickName,
-                                        SenderUserPhoto = fromUser.Photo,
-                                        To = userDetail.UserId,
-                                        Message = message
-                                    },
-                                    TimeStamp = DateTime.Now,
-                                };
-
-                                _messageService.InsertOne(offlineMessageModel);
-                            }
+                            MessageModel messageModel = new MessageModel { SenderId = senderUserId, SenderUserName = fromUser.NickName, SenderUserPhoto = fromUser.Photo, To = userDetail.UserId, Message = message };
+                            await Clients.Client(userDetail.ConnectionId).SendAsync("ReceiveMessage", messageModel);
                         }
                         else {
                             Console.WriteLine("Sender is Blocked , Can't send the message");
@@ -187,24 +159,31 @@ namespace chat_server.Hubs
                     }
                 }
                 else {
-                    Console.WriteLine("No User Detail Found");
 
-                    Console.WriteLine("inserting offline message");
-                    // TODO save in storage
-                    OfflineMessageModel offlineMessageModel = new OfflineMessageModel
+                    // User is offline
+
+                    if (!userStatus[2]) // Sender is not blocked
                     {
-                        Message = new MessageModel
+                        // TODO save in storage
+                        OfflineMessageModel offlineMessageModel = new OfflineMessageModel
                         {
-                            SenderId = senderUserId,
-                            SenderUserName = fromUser.NickName,
-                            SenderUserPhoto= fromUser.Photo,
-                            To = toUserId,
-                            Message = message
-                        },
-                        TimeStamp = DateTime.Now,
-                    };
+                            Message = new MessageModel
+                            {
+                                SenderId = senderUserId,
+                                SenderUserName = fromUser.NickName,
+                                SenderUserPhoto = fromUser.Photo,
+                                To = toUserId,
+                                Message = message
+                            },
+                            TimeStamp = DateTime.Now,
+                        };
 
-                    _messageService.InsertOne(offlineMessageModel);
+                        _messageService.InsertOne(offlineMessageModel);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Sender is Blocked , Can't send the message");
+                    }
                 }
 
             }
@@ -440,41 +419,41 @@ namespace chat_server.Hubs
         public bool[] _getUserStatus(string senderUserId, string receiverUserId)
         {
 
-            Console.WriteLine("Sender is Blocked , status 1");
+           
 
             bool []data = new bool[3];
             var receiverRoster = _rosterService.Get(receiverUserId);
 
-            Console.WriteLine("Sender is Blocked , status 2");
+            
 
             if (receiverRoster != null)
             {
 
-                Console.WriteLine("Sender is Blocked , status 3");
+                
                 data[0] = receiverRoster.IsActive;
                 data[1] = true;
 
                 if (receiverRoster.Blocked != null && receiverRoster.Blocked.Contains(senderUserId))
                 {
-                    Console.WriteLine("Sender is Blocked , status blocked");
+                    
                     data[2] = true;
                 }
                 else
                 {
-                    Console.WriteLine("Sender is Blocked , status unblocked");
+                    
                     data[2] = false;
                 }
             }
             else
             {
-                Console.WriteLine("Sender is Blocked , receiver is null");
+                
                 data[0] = false;
                 data[1] = false;
                 data[2] = false;
                 
             }
 
-            Console.WriteLine("Sender is Blocked , status 4");
+            
 
             return data;
         }
