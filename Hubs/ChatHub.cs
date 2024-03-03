@@ -68,7 +68,7 @@ namespace chat_server.Hubs
 
             await Clients.All.SendAsync("UserLoggedOut", item);
 
-            await base.OnDisconnectedAsync(exception);
+            await base.OnDisconnectedAsync(null);
         }
 
         public async Task Join(string username)
