@@ -110,9 +110,6 @@ namespace chat_server.Hubs
 
             List<OfflineMessageModel> offlineMessages = getOfflineMessages(userId);
 
-            Console.WriteLine($"User Joined {userId}");
-
-            Console.WriteLine($"offline message size {offlineMessages.Count}");
 
             foreach (var offlineMessage in offlineMessages)
             {
@@ -149,25 +146,16 @@ namespace chat_server.Hubs
                     {
                         bool[] userStatus = _getUserStatus(senderUserId, toUserId);
 
-                        Console.WriteLine($"User Status {userStatus[0]}");
 
-                        if (!userStatus[2]) // not blocked
+                        if (!userStatus[2]) // Sender is not blocked
                         {
-                            if (userStatus[0]) // receiver is online or not
+                            if (userStatus[0]) // is online
                             {
-                                if (userStatus[1]) // request message or not
-                                {
-                                    MessageModel messageModel = new MessageModel { SenderId = senderUserId, SenderUserName = fromUser.NickName, SenderUserPhoto=fromUser.Photo, To = userDetail.UserId, Message = message };
-                                    await Clients.Client(userDetail.ConnectionId).SendAsync("ReceiveMessage", messageModel);
-                                }
-                                else
-                                {
-                                    MessageModel messageModel = new MessageModel { SenderId = senderUserId, SenderUserName = fromUser.NickName, SenderUserPhoto = fromUser.Photo, To = userDetail.UserId, Message = message };
-                                    await Clients.Client(userDetail.ConnectionId).SendAsync("ReceiveRequestMessage", messageModel);
-                                }
 
+                                MessageModel messageModel = new MessageModel { SenderId = senderUserId, SenderUserName = fromUser.NickName, SenderUserPhoto = fromUser.Photo, To = userDetail.UserId, Message = message };
+                                await Clients.Client(userDetail.ConnectionId).SendAsync("ReceiveMessage", messageModel);
                             }
-                            else
+                            else // Receiver Offline
                             {
 
                                 Console.WriteLine("inserting offline message");
@@ -187,6 +175,9 @@ namespace chat_server.Hubs
 
                                 _messageService.InsertOne(offlineMessageModel);
                             }
+                        }
+                        else {
+                            Console.WriteLine("Sender is Blocked , Can't send the message");
                         }
 
                     }
