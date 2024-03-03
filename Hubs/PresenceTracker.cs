@@ -97,13 +97,6 @@ namespace chat_server.Hubs
         {
             List<UserDetail> toUser = ConnectedUser.Where(x => x.UserId == userId).ToList();
 
-            Console.WriteLine($"Looking for  userid {userId}");
-
-            foreach(var item in ConnectedUser) 
-            { 
-                Console.WriteLine($"Coonected user Connection -> {item.ConnectionId} :: userId {item.UserId}");
-            }
-
             return toUser;
         }
 

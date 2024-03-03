@@ -441,27 +441,22 @@ namespace chat_server.Hubs
             if (receiverRoster != null)
             {
                 data[0] = receiverRoster.IsActive;
-
-                if (receiverRoster.Follower.Any(follower => follower.UserId == senderUserId))
-                {
-                    data[1] = true;
-                }
-                else 
-                {
-                    data[1] = false;
-                }
+                data[1] = true;
 
                 if (receiverRoster.Blocked != null && receiverRoster.Blocked.Contains(senderUserId))
                 {
+                    Console.WriteLine("Sender is Blocked , status blocked");
                     data[2] = true;
                 }
                 else
                 {
+                    Console.WriteLine("Sender is Blocked , status unblocked");
                     data[2] = false;
                 }
             }
             else
             {
+                Console.WriteLine("Sender is Blocked , receiver is null");
                 data[0] = false;
                 data[1] = false;
                 data[2] = false;
