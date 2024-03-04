@@ -418,9 +418,6 @@ namespace chat_server.Hubs
 
         public bool[] _getUserStatus(string senderUserId, string receiverUserId)
         {
-
-           
-
             bool []data = new bool[3];
             var receiverRoster = _rosterService.Get(receiverUserId);
 
@@ -490,9 +487,21 @@ namespace chat_server.Hubs
             liveCall.Message = message;
             liveCall.IsVideo = isVideo;
 
+            bool[] userStatus = _getUserStatus(senderId, receiverUserId);
+
             foreach (var item in reveiverUserDetail)
             {
-                Clients.Client(item.ConnectionId).SendAsync("ReceiveLiveInvitation", liveCall);
+
+                if (!userStatus[2]) // Sender is not blocked
+                {
+                    Clients.Client(item.ConnectionId).SendAsync("ReceiveLiveInvitation", liveCall);
+                }
+                else
+                {
+                    Console.WriteLine("Sender is Blocked , Can't send the message");
+                }
+
+                
             }
         }
 
