@@ -533,5 +533,26 @@ namespace chat_server.Hubs
         {
             return Context.ConnectionId;
         }
+
+        // Features Functionaly
+        public async void SendTypingStatus(String receiverUserId, bool typing)
+        {
+            try 
+            { 
+                String connectionId = Context.ConnectionId;
+                String senderUserId = _presenceTracker.GetUserId(connectionId);
+
+                List<UserDetail> receiverUserDetail = _presenceTracker.GetUserDetail(receiverUserId);
+
+                foreach(UserDetail receiverUser in receiverUserDetail)
+                {
+                    TypingModel typingModel = new TypingModel { SenderId = senderUserId, TypingStatus = typing };
+                    await Clients.Client(connectionId).SendAsync("ReceiveTypingStatus", typingModel);
+                }
+               
+
+            }
+            catch (Exception e) { }
+        }
     }
 }

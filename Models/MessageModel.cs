@@ -49,4 +49,11 @@ namespace chat_server.Models
         public DateTime TimeStamp { get; set; }
     }
 
+    public class TypingModel
+    {
+        public string SenderId { get; set; } = string.Empty;
+        public bool TypingStatus { get; set; } = false;
+
+    }
+
 }
