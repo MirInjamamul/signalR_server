@@ -215,6 +215,13 @@ namespace chat_server.Controllers
             return roster;
         }
 
+        [HttpGet("blocktest")]
+        public ActionResult BlockTest()
+        {
+            Console.WriteLine("Test Api Hit");
+            return NoContent();
+        }
+
         [HttpPost("getBlockUser")]
         public ActionResult<BlockedResponseModel> GetBlockedResult(BlockIdModel blockList)
         {
