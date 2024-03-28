@@ -547,7 +547,7 @@ namespace chat_server.Hubs
                 foreach(UserDetail receiverUser in receiverUserDetail)
                 {
                     TypingModel typingModel = new TypingModel { SenderId = senderUserId, TypingStatus = typing };
-                    await Clients.Client(connectionId).SendAsync("ReceiveTypingStatus", typingModel);
+                    await Clients.Client(receiverUser.ConnectionId).SendAsync("ReceiveTypingStatus", typingModel);
                 }
                
 
