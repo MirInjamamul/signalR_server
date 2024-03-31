@@ -12,6 +12,7 @@ namespace chat_server.Models
         public string SenderUserPhoto { get; set; } = string.Empty;
         public string To { get; set; } = string.Empty;
         public string Message { get; set; } = string.Empty;
+        public DateTime TimeStamp { get; set; } = DateTime.UtcNow;
 
     }
     public class CallModel

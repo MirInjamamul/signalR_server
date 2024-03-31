@@ -113,7 +113,14 @@ namespace chat_server.Hubs
 
             foreach (var offlineMessage in offlineMessages)
             {
-                MessageModel messageModel = new MessageModel { SenderId = offlineMessage.Message.SenderId, SenderUserName = offlineMessage.Message.SenderUserName, SenderUserPhoto = offlineMessage.Message.SenderUserPhoto, To = offlineMessage.Message.To, Message = offlineMessage.Message.Message };
+                MessageModel messageModel = new MessageModel { 
+                    SenderId = offlineMessage.Message.SenderId, 
+                    SenderUserName = offlineMessage.Message.SenderUserName, 
+                    SenderUserPhoto = offlineMessage.Message.SenderUserPhoto, 
+                    To = offlineMessage.Message.To, 
+                    Message = offlineMessage.Message.Message, 
+                    TimeStamp = offlineMessage.Message.TimeStamp,
+                };
                 await Clients.Caller.SendAsync("ReceiveMessage", messageModel);
             }
 
