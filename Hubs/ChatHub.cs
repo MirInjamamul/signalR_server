@@ -144,6 +144,7 @@ namespace chat_server.Hubs
                 string senderUserId = _presenceTracker.GetUserId(fromConnectionId);
 
                 Roster fromUser = _getUserName(senderUserId);
+                Roster toUser = _getUserName(toUserId);
 
                 List<UserDetail> toUserDetail = _presenceTracker.GetUserDetail(toUserId);
                 bool[] userStatus = _getUserStatus(senderUserId, toUserId);
@@ -169,6 +170,8 @@ namespace chat_server.Hubs
                                     SenderUserName = fromUser.NickName,
                                     SenderUserPhoto = fromUser.Photo,
                                     To = toUserId,
+                                    ReceiverUserName = toUser.NickName,
+                                    ReceiverUserPhoto = toUser.Photo,
                                     Message = message
                                 },
                                 TimeStamp = DateTime.Now,
@@ -199,6 +202,8 @@ namespace chat_server.Hubs
                                 SenderUserName = fromUser.NickName,
                                 SenderUserPhoto = fromUser.Photo,
                                 To = toUserId,
+                                ReceiverUserName = toUser.NickName,
+                                ReceiverUserPhoto= toUser.Photo,
                                 Message = message
                             },
                             TimeStamp = DateTime.Now,

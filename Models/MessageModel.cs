@@ -11,6 +11,8 @@ namespace chat_server.Models
         public string SenderUserName { get; set; } =string.Empty;
         public string SenderUserPhoto { get; set; } = string.Empty;
         public string To { get; set; } = string.Empty;
+        public string ReceiverUserName { get; set; } = string.Empty;
+        public string ReceiverUserPhoto { get; set; } = string.Empty;
         public string Message { get; set; } = string.Empty;
         public DateTime TimeStamp { get; set; } = DateTime.UtcNow;
 
