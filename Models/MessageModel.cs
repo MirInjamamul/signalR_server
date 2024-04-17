@@ -48,6 +48,8 @@ namespace chat_server.Models
         public ObjectId _id {  get; set; }
         public MessageModel Message { get; set; } = new MessageModel();
         public DateTime TimeStamp { get; set; }
+
+        public bool IsOfflineMessage { get; set; } = true;
     }
 
     public class TypingModel

@@ -158,6 +158,25 @@ namespace chat_server.Hubs
                         {
                             MessageModel messageModel = new MessageModel { SenderId = senderUserId, SenderUserName = fromUser.NickName, SenderUserPhoto = fromUser.Photo, To = userDetail.UserId, Message = message };
                             await Clients.Client(userDetail.ConnectionId).SendAsync("ReceiveMessage", messageModel);
+
+
+                            // TODO save in permanant storage
+                            OfflineMessageModel offlineMessageModel = new OfflineMessageModel
+                            {
+                                Message = new MessageModel
+                                {
+                                    SenderId = senderUserId,
+                                    SenderUserName = fromUser.NickName,
+                                    SenderUserPhoto = fromUser.Photo,
+                                    To = toUserId,
+                                    Message = message
+                                },
+                                TimeStamp = DateTime.Now,
+                                IsOfflineMessage = false
+                            };
+
+                            _messageService.InsertOne(offlineMessageModel);
+
                         }
                         else {
                             Console.WriteLine("Sender is Blocked , Can't send the message");
@@ -183,6 +202,7 @@ namespace chat_server.Hubs
                                 Message = message
                             },
                             TimeStamp = DateTime.Now,
+                            IsOfflineMessage = true
                         };
 
                         _messageService.InsertOne(offlineMessageModel);

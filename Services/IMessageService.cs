@@ -8,6 +8,8 @@ namespace chat_server.Services
 
         List<OfflineMessageModel> GetOfflineMessageByUserAsync(string userId);
 
+        List<OfflineMessageModel> GetBackupMessageByUser(string userId);
+
         void deleteMessage(string userId);
     }
 }
