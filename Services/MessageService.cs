@@ -15,9 +15,14 @@ namespace chat_server.Services
 
         public void deleteMessage(string userId)
         {
-            var filter = Builders<OfflineMessageModel>.Filter.Eq(x => x.Message.To, userId);
+            var filter = Builders<OfflineMessageModel>.Filter.And(
+                Builders<OfflineMessageModel>.Filter.Eq(x => x.Message.To, userId),
+                Builders<OfflineMessageModel>.Filter.Eq(x => x.IsOfflineMessage, true)
+            );
 
-            _offlineMessage.DeleteMany(filter);
+            var update = Builders<OfflineMessageModel>.Update.Set(x => x.IsOfflineMessage, false);
+
+            _offlineMessage.UpdateMany(filter, update);
         }
 
         public List<OfflineMessageModel> GetOfflineMessageByUserAsync(string userId)
@@ -34,11 +39,10 @@ namespace chat_server.Services
 
         public List<OfflineMessageModel> GetBackupMessageByUser(string userId)
         {
-            var filter = Builders<OfflineMessageModel>.Filter.And(
+            var filter = Builders<OfflineMessageModel>.Filter.Or(
                 Builders<OfflineMessageModel>.Filter.Eq(x => x.Message.To, userId),
-                Builders<OfflineMessageModel>.Filter.Eq(x => x.IsOfflineMessage, true)
-                );
-            // Builders<OfflineMessageModel>.Filter.Eq(x => x.Message.To, userId);
+                Builders<OfflineMessageModel>.Filter.Eq(x => x.Message.SenderId, userId)
+            ) & Builders<OfflineMessageModel>.Filter.Eq(x => x.IsOfflineMessage, false);
             var offlineMessages = _offlineMessage.Find(filter).ToList();
 
             return offlineMessages;
