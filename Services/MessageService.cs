@@ -39,10 +39,10 @@ namespace chat_server.Services
 
         public List<OfflineMessageModel> GetBackupMessageByUser(string userId)
         {
-            var filter = Builders<OfflineMessageModel>.Filter.Or(
+            var filter = Builders<OfflineMessageModel>.Filter.And(
                 Builders<OfflineMessageModel>.Filter.Eq(x => x.Message.To, userId),
-                Builders<OfflineMessageModel>.Filter.Eq(x => x.Message.SenderId, userId)
-            ) & Builders<OfflineMessageModel>.Filter.Eq(x => x.IsOfflineMessage, false);
+                Builders<OfflineMessageModel>.Filter.Eq(x => x.IsOfflineMessage, false)
+            ) | Builders<OfflineMessageModel>.Filter.Eq(x => x.Message.SenderId, userId);
             var offlineMessages = _offlineMessage.Find(filter).ToList();
 
             return offlineMessages;
