@@ -121,7 +121,17 @@ namespace chat_server.Hubs
                     Message = offlineMessage.Message.Message, 
                     TimeStamp = offlineMessage.Message.TimeStamp,
                 };
-                await Clients.Caller.SendAsync("ReceiveMessage", messageModel);
+
+                if(offlineMessage.IsPriorityMessage)
+                {
+                    await Clients.Caller.SendAsync("ReceivePriorityMessage", messageModel);
+                }
+                else
+                {
+                    await Clients.Caller.SendAsync("ReceiveMessage", messageModel);
+                }
+
+                
             }
 
             _messageService.deleteMessage(userId);
@@ -175,7 +185,8 @@ namespace chat_server.Hubs
                                     Message = message
                                 },
                                 TimeStamp = DateTime.Now,
-                                IsOfflineMessage = false
+                                IsOfflineMessage = false,
+                                IsPriorityMessage = false,
                             };
 
                             _messageService.InsertOne(offlineMessageModel);
@@ -207,7 +218,98 @@ namespace chat_server.Hubs
                                 Message = message
                             },
                             TimeStamp = DateTime.Now,
-                            IsOfflineMessage = true
+                            IsOfflineMessage = true,
+                            IsPriorityMessage = false,
+                        };
+
+                        _messageService.InsertOne(offlineMessageModel);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Sender is Blocked , Can't send the message");
+                    }
+                }
+
+            }
+            catch { }
+        }
+
+        public async void SendPriorityMessage(string toUserId, string message)
+        {
+            try
+            {
+                string fromConnectionId = Context.ConnectionId;
+                string senderUserId = _presenceTracker.GetUserId(fromConnectionId);
+
+                Roster fromUser = _getUserName(senderUserId);
+                Roster toUser = _getUserName(toUserId);
+
+                List<UserDetail> toUserDetail = _presenceTracker.GetUserDetail(toUserId);
+                bool[] userStatus = _getUserStatus(senderUserId, toUserId);
+
+
+                if (toUserDetail.Count != 0)
+                {
+                    // User is online
+                    foreach (UserDetail userDetail in toUserDetail)
+                    {
+                        if (!userStatus[2]) // Sender is not blocked
+                        {
+                            MessageModel messageModel = new MessageModel { SenderId = senderUserId, SenderUserName = fromUser.NickName, SenderUserPhoto = fromUser.Photo, To = userDetail.UserId, Message = message };
+                            await Clients.Client(userDetail.ConnectionId).SendAsync("ReceivePriorityMessage", messageModel);
+
+
+                            // TODO save in permanant storage
+                            OfflineMessageModel offlineMessageModel = new OfflineMessageModel
+                            {
+                                Message = new MessageModel
+                                {
+                                    SenderId = senderUserId,
+                                    SenderUserName = fromUser.NickName,
+                                    SenderUserPhoto = fromUser.Photo,
+                                    To = toUserId,
+                                    ReceiverUserName = toUser.NickName,
+                                    ReceiverUserPhoto = toUser.Photo,
+                                    Message = message
+                                },
+                                TimeStamp = DateTime.Now,
+                                IsOfflineMessage = false, 
+                                IsPriorityMessage = true,
+                            };
+
+                            _messageService.InsertOne(offlineMessageModel);
+
+                        }
+                        else
+                        {
+                            Console.WriteLine("Sender is Blocked , Can't send the message");
+                        }
+
+                    }
+                }
+                else
+                {
+
+                    // User is offline
+
+                    if (!userStatus[2]) // Sender is not blocked
+                    {
+                        // TODO save in storage
+                        OfflineMessageModel offlineMessageModel = new OfflineMessageModel
+                        {
+                            Message = new MessageModel
+                            {
+                                SenderId = senderUserId,
+                                SenderUserName = fromUser.NickName,
+                                SenderUserPhoto = fromUser.Photo,
+                                To = toUserId,
+                                ReceiverUserName = toUser.NickName,
+                                ReceiverUserPhoto = toUser.Photo,
+                                Message = message
+                            },
+                            TimeStamp = DateTime.Now,
+                            IsOfflineMessage = true,
+                            IsPriorityMessage = true,
                         };
 
                         _messageService.InsertOne(offlineMessageModel);

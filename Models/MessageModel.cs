@@ -52,6 +52,7 @@ namespace chat_server.Models
         public DateTime TimeStamp { get; set; }
 
         public bool IsOfflineMessage { get; set; } = true;
+        public bool IsPriorityMessage { get; set; } = false;
     }
 
     public class TypingModel
