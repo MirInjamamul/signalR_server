@@ -4,6 +4,7 @@ using chat_server.Services;
 using Microsoft.AspNetCore.SignalR;
 using MongoDB.Driver.Core.Connections;
 using MongoDB.Driver.Core.Servers;
+using System.Collections.Generic;
 using System.Xml.Linq;
 using static chat_server.Utils.Util;
 using static System.Net.WebRequestMethods;
@@ -223,6 +224,13 @@ namespace chat_server.Hubs
                         };
 
                         _messageService.InsertOne(offlineMessageModel);
+
+
+
+
+                        PostOfflineMessage(toUserId, getOfflineMessages(toUserId).Count);
+
+
                     }
                     else
                     {
@@ -313,6 +321,9 @@ namespace chat_server.Hubs
                         };
 
                         _messageService.InsertOne(offlineMessageModel);
+
+                        await PostOfflineMessage(toUserId, getOfflineMessages(toUserId).Count);
+
                     }
                     else
                     {
@@ -517,7 +528,7 @@ namespace chat_server.Hubs
 
         static async Task PostOnlineStatus(string userId, bool onlineStatus) 
         {
-            string apiURL = "http://185.100.232.17:3011/api/online-status";
+            string apiURL = "https://api.lovorise.com/api/online-status";
 
             int status = (onlineStatus) ? 1 : 0;
 
@@ -544,6 +555,42 @@ namespace chat_server.Hubs
                     }
                 }
                 catch (Exception e) {
+                    Console.WriteLine($"Exception: {e.Message}");
+                }
+            }
+
+        }
+
+        static async Task PostOfflineMessage(string id, int count)
+        {
+            string apiURL = "https://api.lovorise.com/api/chat-reminder";
+
+            string messange_count = count.ToString();
+
+            // payload
+            string jsonPayload = $@"{{
+                ""id"": ""{id}"",
+                ""messange_count"": ""{messange_count}""
+            }}";
+
+            using (HttpClient client = new HttpClient())
+            {
+                StringContent content = new StringContent(jsonPayload, System.Text.Encoding.UTF8, "application/json");
+
+                try
+                {
+                    HttpResponseMessage responseMessage = await client.PostAsync(apiURL, content);
+                    if (responseMessage.IsSuccessStatusCode)
+                    {
+
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Error {responseMessage.StatusCode} - {responseMessage.ReasonPhrase}");
+                    }
+                }
+                catch (Exception e)
+                {
                     Console.WriteLine($"Exception: {e.Message}");
                 }
             }
