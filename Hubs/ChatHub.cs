@@ -547,11 +547,11 @@ namespace chat_server.Hubs
                     HttpResponseMessage responseMessage = await client.PostAsync(apiURL, content);
                     if (responseMessage.IsSuccessStatusCode)
                     {
-
+                        Console.WriteLine($"Successful {responseMessage.StatusCode} - userid {userId} online status {onlineStatus}");
                     }
                     else
                     {
-                        Console.WriteLine($"Error {responseMessage.StatusCode} - {responseMessage.ReasonPhrase}");
+                        Console.WriteLine($"Error {responseMessage.StatusCode} - {responseMessage.ReasonPhrase} - userid {userId} online status {onlineStatus}");
                     }
                 }
                 catch (Exception e) {
